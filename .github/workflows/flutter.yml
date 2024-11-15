@@ -34,9 +34,6 @@ jobs:
       - name: Run Unit Tests
         run: flutter test --coverage
 
-      - name: Generate Coverage Report
-        run: dart run test_cov_console --file=coverage/lcov.info --multi -c
-
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
         with:
