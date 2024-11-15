@@ -38,7 +38,7 @@ jobs:
       - name: Generate CSV Coverage Report
         run: |
           export PATH="$PATH":"$HOME/.pub-cache/bin"
-          dart pub global run test_cov_console --file=coverage/lcov.info --multi -c
+          dart pub global run test_cov_console --file=coverage/lcov.info -c
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
