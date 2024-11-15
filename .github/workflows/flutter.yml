@@ -19,22 +19,58 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.13.5
+          flutter-version: '3.13.5'
 
-      - name: Install Flutter
+      - name: Install Flutter SDK (Alternative Method)
         run: |
           git clone https://github.com/flutter/flutter.git --branch 3.24.5 --depth 1
           echo "$PWD/flutter/bin" >> $GITHUB_PATH
           flutter --version
 
-
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Unit Tests
+      - name: Run Unit Tests with Coverage
         run: flutter test --coverage
 
-      - name: Upload Coverage Report
+      - name: Convert Coverage to CSV
+        run: |
+          # Activate test_cov_console if not already activated
+          dart pub global activate test_cov_console
+
+          # Ensure the global packages are in PATH
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+          # Convert LCOV to CSV
+          test_cov_console --file=coverage/lcov.info --multi -c ,
+
+      - name: Save Coverage CSV
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-csv
+          path: coverage/coverage.csv
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate Coverage Graph
+        run: |
+          python scripts/generate_coverage_graph.py coverage/coverage.csv coverage/coverage.png
+
+      - name: Upload Coverage Graph
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-graph
+          path: coverage/coverage.png
+
+      - name: Upload Coverage Report (LCOV)
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
