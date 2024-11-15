@@ -50,25 +50,24 @@ jobs:
             exit 1
           fi
 
-      # Step 7: Convert LCOV to CSV using test_cov_console
       - name: Convert Coverage to CSV
         run: |
           # Activate test_cov_console globally
           dart pub global activate test_cov_console
-
+      
           # Add the Dart pub cache to PATH
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
-
+      
           # List the current directory
           echo "Current working directory before converting coverage:"
           pwd
-
+      
           # List coverage directory
           echo "Listing coverage directory:"
           ls -al coverage
-
-          # Convert lcov.info to coverage.csv with absolute path
-          test_cov_console --file="${GITHUB_WORKSPACE}/coverage/lcov.info" --multi -c , --output="${GITHUB_WORKSPACE}/coverage/coverage.csv"
+      
+          # Convert lcov.info to coverage.csv with correct options
+          test_cov_console --file=coverage/lcov.info --multi --separator=, --output=coverage/coverage.csv
 
       # Step 8: Verify coverage.csv file
       - name: Verify Coverage CSV
