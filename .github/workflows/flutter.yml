@@ -19,16 +19,18 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5' # Updated to use Flutter 3.24.5
+          flutter-version: '3.24.5'
 
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Run Unit Tests with Coverage
-        run: flutter test --coverage
+        run: flutter test --coverage --coverage-path=coverage/lcov.info
 
       - name: List Coverage Directory
-        run: ls -la coverage/
+        run: |
+          ls -la coverage/
+          find . -name "lcov.info"
 
       - name: Install test_cov_console
         run: dart pub global activate test_cov_console
