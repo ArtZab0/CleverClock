@@ -16,9 +16,10 @@ class _SetAlarmState extends State<SetAlarm> {
   final TextEditingController _labelController = TextEditingController();
 
   // Function to pick time
-  Future<void> _pickTime() async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
+  Future<void> _pickTime({Future<TimeOfDay?> Function(BuildContext)? customTimePicker}) async {
+    final picker = customTimePicker ?? showTimePicker;
+    final TimeOfDay? picked = await picker(
+      context,
       initialTime: _selectedTime,
     );
 
@@ -28,6 +29,9 @@ class _SetAlarmState extends State<SetAlarm> {
       });
     }
   }
+
+
+
 
   // Function to save the alarm
   void _saveAlarm() {
