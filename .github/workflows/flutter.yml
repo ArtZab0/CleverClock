@@ -19,13 +19,16 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.5' # Use the Flutter version compatible with your project
+          flutter-version: '3.24.5' # Updated to use Flutter 3.24.5
 
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Run Unit Tests with Coverage
         run: flutter test --coverage
+
+      - name: List Coverage Directory
+        run: ls -la coverage/
 
       - name: Install test_cov_console
         run: dart pub global activate test_cov_console
