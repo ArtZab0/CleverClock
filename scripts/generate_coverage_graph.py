@@ -1,35 +1,31 @@
-# scripts/generate_coverage_graph.py
-
-import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-def main(csv_path, output_image):
-    # Read the CSV coverage data
-    df = pd.read_csv(csv_path)
+# Ensure the coverage directory exists
+coverage_dir = 'coverage'
+csv_file = os.path.join(coverage_dir, 'test_cov_console_report.csv')
+output_image = os.path.join(coverage_dir, 'coverage_graph.png')
 
-    # Example: Summarize coverage per file
-    summary = df.groupby('file')['coverage'].mean().reset_index()
+# Read the CSV file
+df = pd.read_csv(csv_file)
 
-    # Sort the summary for better visualization
-    summary = summary.sort_values(by='coverage', ascending=False)
+# Calculate total coverage per file
+df['Line Coverage'] = df['Covered Lines'] / df['Total Lines'] * 100
 
-    # Plot the coverage
-    plt.figure(figsize=(10, 8))
-    plt.barh(summary['file'], summary['coverage'], color='skyblue')
-    plt.xlabel('Coverage (%)')
-    plt.title('Flutter Test Coverage by File')
-    plt.gca().invert_yaxis()  # Highest coverage at the top
-    plt.tight_layout()
+# Sort by coverage
+df.sort_values('Line Coverage', inplace=True)
 
-    # Save the plot
-    plt.savefig(output_image)
-    print(f"Coverage graph saved to {output_image}")
+# Plot the coverage
+plt.figure(figsize=(10, 6))
+plt.barh(df['File'], df['Line Coverage'], color='skyblue')
+plt.xlabel('Line Coverage (%)')
+plt.ylabel('File')
+plt.title('Code Coverage per File')
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python generate_coverage_graph.py <input_csv> <output_image>")
-        sys.exit(1)
-    csv_path = sys.argv[1]
-    output_image = sys.argv[2]
-    main(csv_path, output_image)
+# Add coverage percentages next to the bars
+for index, value in enumerate(df['Line Coverage']):
+    plt.text(value + 1, index, f"{value:.2f}%", va='center')
+
+plt.tight_layout()
+plt.savefig(output_image)
