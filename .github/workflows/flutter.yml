@@ -21,19 +21,25 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5' # Specify the desired Flutter version
+          flutter-version: '3.24.5' # Ensure this matches your project's Flutter version
 
-      # Step 3: Install Flutter dependencies
+      # Step 3: Verify Flutter installation
+      - name: Verify Flutter
+        run: flutter --version
+
+      # Step 4: Install Flutter dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      # Step 4: Run Flutter tests with coverage
+      # Step 5: Run Flutter tests with coverage
       - name: Run Unit Tests with Coverage
         run: flutter test --coverage
 
-      # Step 5: Verify coverage directory and lcov.info file
+      # Step 6: Verify coverage directory and lcov.info file
       - name: Verify Coverage Report
         run: |
+          echo "Current working directory:"
+          pwd
           echo "Listing coverage directory:"
           ls -al coverage
           echo "Checking for lcov.info:"
@@ -44,7 +50,7 @@ jobs:
             exit 1
           fi
 
-      # Step 6: Convert LCOV to CSV using test_cov_console
+      # Step 7: Convert LCOV to CSV using test_cov_console
       - name: Convert Coverage to CSV
         run: |
           # Activate test_cov_console globally
@@ -53,10 +59,18 @@ jobs:
           # Add the Dart pub cache to PATH
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
-          # Convert lcov.info to CSV
-          test_cov_console --file=coverage/lcov.info --multi -c , --output=coverage/coverage.csv
+          # List the current directory
+          echo "Current working directory before converting coverage:"
+          pwd
 
-      # Step 7: Verify coverage.csv file
+          # List coverage directory
+          echo "Listing coverage directory:"
+          ls -al coverage
+
+          # Convert lcov.info to coverage.csv with absolute path
+          test_cov_console --file="${GITHUB_WORKSPACE}/coverage/lcov.info" --multi -c , --output="${GITHUB_WORKSPACE}/coverage/coverage.csv"
+
+      # Step 8: Verify coverage.csv file
       - name: Verify Coverage CSV
         run: |
           echo "Listing coverage directory after CSV conversion:"
@@ -69,31 +83,31 @@ jobs:
             exit 1
           fi
 
-      # Step 8: Upload the CSV as an artifact
+      # Step 9: Upload the CSV as an artifact
       - name: Upload Coverage CSV
         uses: actions/upload-artifact@v3
         with:
           name: coverage-csv
           path: coverage/coverage.csv
 
-      # Step 9: Set up Python for graph generation
+      # Step 10: Set up Python for graph generation
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      # Step 10: Install Python dependencies
+      # Step 11: Install Python dependencies
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 11: Generate Coverage Graph using Python script
+      # Step 12: Generate Coverage Graph using Python script
       - name: Generate Coverage Graph
         run: |
           python scripts/generate_coverage_graph.py coverage/coverage.csv coverage/coverage.png
 
-      # Step 12: Verify the generated graph
+      # Step 13: Verify the generated graph
       - name: Verify Coverage Graph
         run: |
           echo "Listing coverage directory after graph generation:"
@@ -106,14 +120,14 @@ jobs:
             exit 1
           fi
 
-      # Step 13: Upload the coverage graph as an artifact
+      # Step 14: Upload the coverage graph as an artifact
       - name: Upload Coverage Graph
         uses: actions/upload-artifact@v3
         with:
           name: coverage-graph
           path: coverage/coverage.png
 
-      # Step 14: Upload the original LCOV report as an artifact
+      # Step 15: Upload the original LCOV report as an artifact
       - name: Upload Coverage Report (LCOV)
         uses: actions/upload-artifact@v3
         with:
