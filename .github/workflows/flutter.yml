@@ -27,6 +27,11 @@ jobs:
       - name: Run Unit Tests with Coverage
         run: flutter test --coverage --coverage-path=coverage/lcov.info
 
+      - name: List Coverage Directory
+        run: |
+          ls -la coverage/
+          find . -name "lcov.info"
+
       - name: Install test_cov_console
         run: dart pub global activate test_cov_console
 
@@ -35,21 +40,8 @@ jobs:
           export PATH="$PATH":"$HOME/.pub-cache/bin"
           dart pub global run test_cov_console --file=coverage/lcov.info -c
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install Python Dependencies
-        run: pip install pandas matplotlib
-
-      - name: Generate Coverage Visualization
-        run: python coverage_visualization.py coverage/test_cov_console.csv
-
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
-          path: |
-            coverage/
-            coverage_report.png
+          path: coverage/
