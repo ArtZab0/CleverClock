@@ -19,27 +19,24 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.13.5
-
-      - name: Install Flutter
-        run: |
-          git clone https://github.com/flutter/flutter.git --branch 3.24.5 --depth 1
-          echo "$PWD/flutter/bin" >> $GITHUB_PATH
-          flutter --version
-
+          flutter-version: '3.13.5' # Use the Flutter version compatible with your project
 
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Unit Tests
+      - name: Run Unit Tests with Coverage
         run: flutter test --coverage
 
-      - name: Generate Coverage Report
+      - name: Install test_cov_console
+        run: dart pub global activate test_cov_console
+
+      - name: Generate CSV Coverage Report
         run: |
-          dart run test_cov_console --file=coverage/lcov.info --multi -c
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+          dart pub global run test_cov_console --file=coverage/lcov.info --multi -c
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
-          path: coverage/lcov.info
+          path: coverage/
