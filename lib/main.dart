@@ -123,6 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           ),
+
+          /*
           IconButton(
             icon: const Icon(Icons.videogame_asset),
             onPressed: () {
@@ -132,6 +134,51 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           ),
+          */
+
+          ElevatedButton(
+              onPressed: () {
+                // Navigate to the new page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  const MathPuzzle()),
+                );
+              },
+              child: const Text("Math"),
+            ),
+
+              ElevatedButton(
+              onPressed: () {
+                // Navigate to the new page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  const SudokuPuzzle()),
+                );
+              },
+              child: const Text("Sudoku"),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the new page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  const MazePuzzle()),
+                );
+              },
+              child: const Text("Maze"),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the new page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  const SortingPuzzle()),
+                );
+              },
+              child: const Text("Sorting"),
+            ),
         ],
       ),
       body: _alarms.isEmpty
