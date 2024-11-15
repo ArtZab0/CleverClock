@@ -43,7 +43,7 @@ class _MathGameState extends State<MathGame> {
       _num2 = Random().nextInt(10) + 1; // Random number between 1 and 10
       _correctAnswer = _num1 + _num2;
       _input = ""; // Clear input for the new problem
-      _message = "Solve the problem:";
+      // Do not reset _message here
     });
   }
 
@@ -70,56 +70,59 @@ class _MathGameState extends State<MathGame> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Display the problem
-        Text(
-          '$_num1 + $_num2 = ?',
-          style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        // Display the user's current input
-        Text(
-          _input,
-          style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        // Display a message to guide the user
-        Text(
-          _message,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
-        ),
-        const SizedBox(height: 20),
-        // Keypad grid layout
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          children: <Widget>[
-            ...List.generate(9, (index) {
-              return KeypadButton(
-                label: '${index + 1}',
-                onPressed: () => _onKeyPressed('${index + 1}'),
-              );
-            }),
-            KeypadButton(
-              label: '0',
-              onPressed: () => _onKeyPressed('0'),
-            ),
-            KeypadButton(
-              label: 'Clear',
-              onPressed: () {
-                setState(() {
-                  _input = "";
-                });
-              },
-            ),
-            KeypadButton(
-              label: 'Enter',
-              onPressed: _checkAnswer, // Check the answer when 'Enter' is pressed
-            ),
-          ],
-        ),
-      ],
+    return SingleChildScrollView( // Added to prevent overflow
+      child: Column(
+        children: [
+          // Display the problem
+          Text(
+            '$_num1 + $_num2 = ?',
+            style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          // Display the user's current input
+          Text(
+            _input,
+            style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          // Display a message to guide the user
+          Text(
+            _message,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
+          ),
+          const SizedBox(height: 20),
+          // Keypad buttons using Wrap
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 8.0,
+            alignment: WrapAlignment.center,
+            children: <Widget>[
+              ...List.generate(9, (index) {
+                return KeypadButton(
+                  label: '${index + 1}',
+                  onPressed: () => _onKeyPressed('${index + 1}'),
+                );
+              }),
+              KeypadButton(
+                label: '0',
+                onPressed: () => _onKeyPressed('0'),
+              ),
+              KeypadButton(
+                label: 'Clear',
+                onPressed: () {
+                  setState(() {
+                    _input = "";
+                  });
+                },
+              ),
+              KeypadButton(
+                label: 'Enter',
+                onPressed: _checkAnswer,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -137,11 +140,14 @@ class KeypadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(label, style: const TextStyle(fontSize: 24)),
+    return SizedBox(
+      width: 80, // Adjust the width as needed
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          child: Text(label, style: const TextStyle(fontSize: 24)),
+        ),
       ),
     );
   }
