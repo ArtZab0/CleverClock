@@ -13,63 +13,107 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Step 2: Set up Flutter using subosito/flutter-action
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.5'
+          flutter-version: '3.24.5' # Specify the desired Flutter version
 
-      - name: Install Flutter SDK (Alternative Method)
-        run: |
-          git clone https://github.com/flutter/flutter.git --branch 3.24.5 --depth 1
-          echo "$PWD/flutter/bin" >> $GITHUB_PATH
-          flutter --version
-
+      # Step 3: Install Flutter dependencies
       - name: Install Dependencies
         run: flutter pub get
 
+      # Step 4: Run Flutter tests with coverage
       - name: Run Unit Tests with Coverage
         run: flutter test --coverage
 
+      # Step 5: Verify coverage directory and lcov.info file
+      - name: Verify Coverage Report
+        run: |
+          echo "Listing coverage directory:"
+          ls -al coverage
+          echo "Checking for lcov.info:"
+          if [ -f coverage/lcov.info ]; then
+            echo "lcov.info found."
+          else
+            echo "lcov.info not found!"
+            exit 1
+          fi
+
+      # Step 6: Convert LCOV to CSV using test_cov_console
       - name: Convert Coverage to CSV
         run: |
-          # Activate test_cov_console if not already activated
+          # Activate test_cov_console globally
           dart pub global activate test_cov_console
 
-          # Ensure the global packages are in PATH
-          export PATH="$PATH":"$HOME/.pub-cache/bin"
+          # Add the Dart pub cache to PATH
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
-          # Convert LCOV to CSV
-          test_cov_console --file=coverage/lcov.info --multi -c ,
+          # Convert lcov.info to CSV
+          test_cov_console --file=coverage/lcov.info --multi -c , --output=coverage/coverage.csv
 
-      - name: Save Coverage CSV
+      # Step 7: Verify coverage.csv file
+      - name: Verify Coverage CSV
+        run: |
+          echo "Listing coverage directory after CSV conversion:"
+          ls -al coverage
+          echo "Checking for coverage.csv:"
+          if [ -f coverage/coverage.csv ]; then
+            echo "coverage.csv found."
+          else
+            echo "coverage.csv not found!"
+            exit 1
+          fi
+
+      # Step 8: Upload the CSV as an artifact
+      - name: Upload Coverage CSV
         uses: actions/upload-artifact@v3
         with:
           name: coverage-csv
           path: coverage/coverage.csv
 
+      # Step 9: Set up Python for graph generation
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
+      # Step 10: Install Python dependencies
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Step 11: Generate Coverage Graph using Python script
       - name: Generate Coverage Graph
         run: |
           python scripts/generate_coverage_graph.py coverage/coverage.csv coverage/coverage.png
 
+      # Step 12: Verify the generated graph
+      - name: Verify Coverage Graph
+        run: |
+          echo "Listing coverage directory after graph generation:"
+          ls -al coverage
+          echo "Checking for coverage.png:"
+          if [ -f coverage/coverage.png ]; then
+            echo "coverage.png found."
+          else
+            echo "coverage.png not found!"
+            exit 1
+          fi
+
+      # Step 13: Upload the coverage graph as an artifact
       - name: Upload Coverage Graph
         uses: actions/upload-artifact@v3
         with:
           name: coverage-graph
           path: coverage/coverage.png
 
+      # Step 14: Upload the original LCOV report as an artifact
       - name: Upload Coverage Report (LCOV)
         uses: actions/upload-artifact@v3
         with:
