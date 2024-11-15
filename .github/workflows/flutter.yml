@@ -50,7 +50,37 @@ jobs:
             exit 1
           fi
 
-      # Step 7: Convert LCOV to CSV using test_cov_console
+      # Step 7: Install lcov
+      - name: Install lcov
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      # Step 8: Filter the coverage report
+      - name: Filter coverage report
+        run: |
+          lcov --remove coverage/lcov.info \
+            '*/test/*' \
+            '*/.pub-cache/*' \
+            '*/flutter/*' \
+            '*/packages/*' \
+            '*/linux/*' \
+            '*/windows/*' \
+            '*/macos/*' \
+            --output-file coverage/lcov_filtered.info
+
+      # Step 9: Verify filtered coverage report
+      - name: Verify Filtered Coverage Report
+        run: |
+          echo "Listing coverage directory after filtering:"
+          ls -al coverage
+          echo "Checking for lcov_filtered.info:"
+          if [ -f coverage/lcov_filtered.info ]; then
+            echo "lcov_filtered.info found."
+          else
+            echo "lcov_filtered.info not found!"
+            exit 1
+          fi
+
+      # Step 10: Convert LCOV to CSV using test_cov_console
       - name: Convert Coverage to CSV
         run: |
           # Activate test_cov_console globally
@@ -59,18 +89,10 @@ jobs:
           # Add the Dart pub cache to PATH
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
-          # List the current directory
-          echo "Current working directory before converting coverage:"
-          pwd
+          # Convert lcov_filtered.info to coverage.csv with correct options
+          test_cov_console --file=coverage/lcov_filtered.info --multi --separator=, --output=coverage/coverage.csv
 
-          # List coverage directory
-          echo "Listing coverage directory:"
-          ls -al coverage
-
-          # Convert lcov.info to coverage.csv with correct options
-          test_cov_console --file=coverage/lcov.info --multi --separator=, --output=coverage/coverage.csv
-
-      # Step 8: Verify coverage.csv file
+      # Step 11: Verify coverage.csv file
       - name: Verify Coverage CSV
         run: |
           echo "Listing coverage directory after CSV conversion:"
@@ -83,31 +105,31 @@ jobs:
             exit 1
           fi
 
-      # Step 9: Upload the CSV as an artifact
+      # Step 12: Upload the CSV as an artifact
       - name: Upload Coverage CSV
         uses: actions/upload-artifact@v3
         with:
           name: coverage-csv
           path: coverage/coverage.csv
 
-      # Step 10: Set up Python for graph generation
+      # Step 13: Set up Python for graph generation
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      # Step 11: Install Python Dependencies
+      # Step 14: Install Python Dependencies
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 12: Generate Coverage Graph using Python script
+      # Step 15: Generate Coverage Graph using Python script
       - name: Generate Coverage Graph
         run: |
           python scripts/generate_coverage_graph.py coverage/coverage.csv coverage/coverage.png
 
-      # Step 13: Verify the generated graph
+      # Step 16: Verify the generated graph
       - name: Verify Coverage Graph
         run: |
           echo "Listing coverage directory after graph generation:"
@@ -120,14 +142,14 @@ jobs:
             exit 1
           fi
 
-      # Step 14: Upload the coverage graph as an artifact
+      # Step 17: Upload the coverage graph as an artifact
       - name: Upload Coverage Graph
         uses: actions/upload-artifact@v3
         with:
           name: coverage-graph
           path: coverage/coverage.png
 
-      # Step 15: Upload the original LCOV report as an artifact
+      # Step 18: Upload the original LCOV report as an artifact
       - name: Upload Coverage Report (LCOV)
         uses: actions/upload-artifact@v3
         with:
