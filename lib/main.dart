@@ -2,8 +2,18 @@ import 'package:flutter/material.dart';
 import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(channelKey: 'basic_channel', channelName: 'Basic notifications', channelDescription: 'Notification channel for basic tests', defaultColor: Color(0xFF9D50DD), ledColor: Colors.white)
+    ],
+    debug: true,
+  );
   runApp(const MyApp());
 }
 
@@ -46,6 +56,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+
+    super.initState();
+  }
+  
   List<Alarm> _alarms = [];
 
   // Function to add a new alarm

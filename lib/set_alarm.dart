@@ -1,6 +1,7 @@
 // set_alarm.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 import 'main.dart'; // To access the Alarm model
 
@@ -15,12 +16,13 @@ class _SetAlarmState extends State<SetAlarm> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   final TextEditingController _labelController = TextEditingController();
 
-  // Function to pick time
+
   Future<void> _pickTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
     );
+
 
     if (picked != null && picked != _selectedTime) {
       setState(() {
@@ -36,7 +38,7 @@ class _SetAlarmState extends State<SetAlarm> {
       isActive: true,
       label: _labelController.text.trim(),
     );
-
+    scheduleNotification(_selectedTime.hour, _selectedTime.minute, _labelController.text.trim());
     Navigator.pop(context, newAlarm);
   }
 
@@ -45,6 +47,27 @@ class _SetAlarmState extends State<SetAlarm> {
     _labelController.dispose();
     super.dispose();
   }
+
+  scheduleNotification(int hour, int min, String label) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 10, 
+        channelKey: 'basic_channel',
+        title: label,
+        body: 'Clever Clock Alarm',
+        category: NotificationCategory.Alarm,
+      ),
+      schedule: NotificationCalendar(
+        timeZone: "America/New_York",
+        hour: hour,                        // 12:00 AM (midnight)
+        minute: min,                     // 30 minutes
+        second: 0,                      // 0 seconds
+        preciseAlarm: true, 
+        repeats: true,
+      )
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
