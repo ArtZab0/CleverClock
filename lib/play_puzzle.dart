@@ -145,18 +145,18 @@ class KeypadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Assign Keys to buttons with unique labels for testing
+    final buttonKey = Key('keypad_button_$label');
     return Padding(
       padding: const EdgeInsets.all(4.0), // Adjusted padding for better fit
       child: ElevatedButton(
+        key: buttonKey,
         onPressed: onPressed,
         child: Text(label, style: const TextStyle(fontSize: 24)),
       ),
     );
   }
 }
-
-
-
 
 // Sudoku game added
 
@@ -237,6 +237,15 @@ class _SudokuBoardState extends State<SudokuBoard> {
       context: context,
       builder: (context) => AlertDialog(
         content: Text(correct ? 'Puzzle Solved!' : 'Incorrect solution!'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (correct) _generatePuzzle(); // Start new puzzle only if solved
+            },
+            child: const Text("OK"),
+          ),
+        ],
       ),
     );
   }
@@ -245,6 +254,7 @@ class _SudokuBoardState extends State<SudokuBoard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Sudoku grid
         GridView.builder(
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -258,29 +268,45 @@ class _SudokuBoardState extends State<SudokuBoard> {
             return Padding(
               padding: const EdgeInsets.all(4.0),
               child: _board[row][col] != null
-                  ? Center(child: Text('${_board[row][col]}', style: const TextStyle(fontSize: 24)))
-                  : TextField(
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
+                  ? Container(
+                key: Key('cell_${row}_$col'),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black),
+                  color: Colors.grey[300],
+                ),
+                child: Center(
+                    child: Text(
+                      '${_board[row][col]}',
                       style: const TextStyle(fontSize: 24),
-                      controller: TextEditingController(
-                        text: _board[row][col]?.toString() ?? '',
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          // Allow the user to clear the value or enter a new number
-                          _board[row][col] = int.tryParse(value);
-                        });
-                      },
-                    ),
+                    )),
+              )
+                  : TextField(
+                key: Key('input_cell_${row}_$col'),
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 24),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    // Allow the user to clear the value or enter a new number
+                    _board[row][col] = int.tryParse(value);
+                  });
+                },
+              ),
             );
           },
         ),
+        const SizedBox(height: 20),
         ElevatedButton(
+          key: const Key('check_solution_button'),
           onPressed: _checkSolution,
           child: const Text('Check Solution'),
         ),
+        const SizedBox(height: 10),
         ElevatedButton(
+          key: const Key('new_puzzle_button'),
           onPressed: _generatePuzzle,
           child: const Text('New Puzzle'),
         ),
@@ -288,8 +314,6 @@ class _SudokuBoardState extends State<SudokuBoard> {
     );
   }
 }
-
-
 
 // Maze Game added
 
@@ -392,6 +416,7 @@ class _MazeBoardState extends State<MazeBoard> {
             content: const Text("Congratulations! You reached the exit!"),
             actions: [
               TextButton(
+                key: const Key('new_maze_button'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   _generateMaze(); // Start a new maze
@@ -409,6 +434,7 @@ class _MazeBoardState extends State<MazeBoard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Maze grid
         Expanded(
           child: GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -432,34 +458,48 @@ class _MazeBoardState extends State<MazeBoard> {
                 color = Colors.white; // Path
               }
               return Container(
+                key: Key('maze_cell_${x}_$y'),
                 margin: const EdgeInsets.all(2.0),
                 color: color,
               );
             },
           ),
         ),
+        const SizedBox(height: 10),
+        // Movement buttons with Keys
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_upward),
+            ElevatedButton(
+              key: const Key('move_up_button'),
               onPressed: () => _movePlayer(-1, 0),
+              child: const Icon(Icons.arrow_upward),
             ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => _movePlayer(0, -1),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: () => _movePlayer(0, 1),
-                ),
-              ],
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              key: const Key('move_left_button'),
+              onPressed: () => _movePlayer(0, -1),
+              child: const Icon(Icons.arrow_back),
             ),
-            IconButton(
-              icon: const Icon(Icons.arrow_downward),
+            const SizedBox(width: 20),
+            ElevatedButton(
+              key: const Key('move_right_button'),
+              onPressed: () => _movePlayer(0, 1),
+              child: const Icon(Icons.arrow_forward),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              key: const Key('move_down_button'),
               onPressed: () => _movePlayer(1, 0),
+              child: const Icon(Icons.arrow_downward),
             ),
           ],
         ),
@@ -467,8 +507,6 @@ class _MazeBoardState extends State<MazeBoard> {
     );
   }
 }
-
-
 
 class SortingPuzzle extends StatelessWidget {
   const SortingPuzzle({super.key});
@@ -508,6 +546,7 @@ class _SortingPuzzleState extends State<SortingGame> {
   void _generateNumbers() {
     final random = Random();
     _numbers = List.generate(8, (index) => random.nextInt(100) + 1);
+    _selectedIndex = null;
     setState(() {});
   }
 
@@ -519,6 +558,13 @@ class _SortingPuzzleState extends State<SortingGame> {
         _selectedIndex = index;
       });
     } else {
+      if (_selectedIndex == index) {
+        // Deselect if same button is pressed
+        setState(() {
+          _selectedIndex = null;
+        });
+        return;
+      }
       // Second selection, perform swap
       setState(() {
         int temp = _numbers[_selectedIndex!];
@@ -550,6 +596,7 @@ class _SortingPuzzleState extends State<SortingGame> {
         content: const Text("Congratulations! You sorted the numbers!"),
         actions: [
           TextButton(
+            key: const Key('play_again_button'),
             onPressed: () {
               Navigator.of(context).pop();
               _generateNumbers(); // Generate a new puzzle
@@ -581,6 +628,7 @@ class _SortingPuzzleState extends State<SortingGame> {
           itemBuilder: (context, index) {
             final isSelected = index == _selectedIndex;
             return GestureDetector(
+              key: Key('number_$index'),
               onTap: () => _swapNumbers(index),
               child: Container(
                 margin: const EdgeInsets.all(4.0),
@@ -601,6 +649,7 @@ class _SortingPuzzleState extends State<SortingGame> {
         ),
         const SizedBox(height: 20),
         ElevatedButton(
+          key: const Key('shuffle_numbers_button'),
           onPressed: _generateNumbers,
           child: const Text("Shuffle Numbers"),
         ),
@@ -608,4 +657,3 @@ class _SortingPuzzleState extends State<SortingGame> {
     );
   }
 }
-
