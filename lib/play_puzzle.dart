@@ -40,13 +40,11 @@ class _MathGameState extends State<MathGame> {
 
   // This method generates a new addition problem
   void _generateNewProblem() {
-    setState(() {
-      _num1 = Random().nextInt(10) + 1; // Random number between 1 and 10
-      _num2 = Random().nextInt(10) + 1; // Random number between 1 and 10
-      _correctAnswer = _num1 + _num2;
-      _input = ""; // Clear input for the new problem
-      _message = "Solve the problem:";
-    });
+    _num1 = Random().nextInt(10) + 1; // Random number between 1 and 10
+    _num2 = Random().nextInt(10) + 1; // Random number between 1 and 10
+    _correctAnswer = _num1 + _num2;
+    _input = ""; // Clear input for the new problem
+    // Do not reset _message here
   }
 
   // This method handles number presses
@@ -61,10 +59,7 @@ class _MathGameState extends State<MathGame> {
     if (_input.isNotEmpty && int.tryParse(_input) == _correctAnswer) {
       setState(() {
         _message = "Correct! Next problem:";
-      });
-      // Delay generating a new problem to allow the message to be visible
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _generateNewProblem();
+        _generateNewProblem(); // Generate a new problem
       });
     } else {
       setState(() {
@@ -75,24 +70,27 @@ class _MathGameState extends State<MathGame> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView( // Wrap Column to prevent overflow
+    return SingleChildScrollView(
       child: Column(
         children: [
           // Display the problem
           Text(
             '$_num1 + $_num2 = ?',
+            key: const Key('problem_text'),
             style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           // Display the user's current input
           Text(
             _input,
+            key: const Key('input_text'),
             style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           // Display a message to guide the user
           Text(
             _message,
+            key: const Key('message_text'),
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
           ),
           const SizedBox(height: 20),
@@ -100,7 +98,8 @@ class _MathGameState extends State<MathGame> {
           GridView.count(
             crossAxisCount: 3,
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling separately
+            physics:
+            const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling separately
             children: <Widget>[
               ...List.generate(9, (index) {
                 return KeypadButton(
@@ -122,7 +121,8 @@ class _MathGameState extends State<MathGame> {
               ),
               KeypadButton(
                 label: 'Enter',
-                onPressed: _checkAnswer, // Check the answer when 'Enter' is pressed
+                onPressed:
+                _checkAnswer, // Check the answer when 'Enter' is pressed
               ),
             ],
           ),
@@ -154,6 +154,7 @@ class KeypadButton extends StatelessWidget {
     );
   }
 }
+
 
 
 
