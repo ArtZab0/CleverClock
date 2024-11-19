@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'play_puzzle.dart';
+import 'set_alarm.dart';
+import 'sound_player.dart';
+
+// Future<void> stopAlarmSound(player) async {
+//   await player.stopPlayer();
+// }
 
 class AlarmPage extends StatelessWidget {
   @override
@@ -26,12 +32,14 @@ class AlarmPage extends StatelessWidget {
             SizedBox(height: 40), // Add some space between the text and button
             ElevatedButton(
               onPressed: () {
+                // SoundPlayer.instance.stopPlayer();
                 // Navigate to the new page
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const MathPuzzle()),
                 );
-              },              child: Text(
+              },
+              child: Text(
                 "Start", // Text on the button
                 style: TextStyle(
                   fontSize: 24, // Larger font for the button text

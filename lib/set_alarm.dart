@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+// import 'package:flutter_sound/flutter_sound.dart';
+import 'sound_player.dart';
+
 
 import 'main.dart'; // To access the Alarm model
 
@@ -64,6 +67,7 @@ class _SetAlarmState extends State<SetAlarm> {
         body: 'Clever Clock Alarm',
         category: NotificationCategory.Alarm,
         payload: {'page': 'alarm',},
+        // customSound: 'assets/ringtone1.mp3',
       ),
       schedule: NotificationCalendar(
         timeZone: "America/New_York",
@@ -74,7 +78,23 @@ class _SetAlarmState extends State<SetAlarm> {
         repeats: true,
       )
     );
+    // SoundPlayer.instance.startPlayer('assets/ringtone1.mp3');
   }
+
+  // Future<void> startAlarmSound(player) async {
+  //   await player.startPlayer(
+  //     fromURI: 'assets/ringtone1.mp3',  // Your sound asset
+  //     codec: Codec.mp3,
+  //     whenFinished: () {
+  //       // Loop the sound when it finishes
+  //       startAlarmSound(player);  // Call start again to loop the sound
+  //     },
+  //   );
+  // }
+
+  // Future<void> stopAlarmSound(player) async {
+  //   await player.stopPlayer();
+  // }
 
 
 

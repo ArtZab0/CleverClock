@@ -13,6 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   awesome_notifications: ^0.10.0
+  flutter_sound: ^9.17.0
 
 
 dev_dependencies:
@@ -29,4 +30,6 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+  assets:
+    - assets/ringtone1.mp3
 
