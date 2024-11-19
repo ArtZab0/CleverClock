@@ -1,4 +1,4 @@
-// play_puzzles.dart
+// play_puzzle.dart
 import 'package:flutter/material.dart';
 import 'dart:math'; // For generating random numbers
 
@@ -34,11 +34,16 @@ class MockNumberGenerator implements NumberGenerator {
   }
 }
 
+//////////////////////////////
+// Math Puzzle Implementation
+//////////////////////////////
+
 // Math Puzzle
 class MathPuzzle extends StatelessWidget {
-  final NumberGenerator? numberGenerator; // Optional NumberGenerator instance for testing
+  final NumberGenerator? numberGenerator;
+  final VoidCallback? onPuzzleCompleted;
 
-  const MathPuzzle({super.key, this.numberGenerator});
+  const MathPuzzle({super.key, this.numberGenerator, this.onPuzzleCompleted});
 
   @override
   Widget build(BuildContext context) {
@@ -48,16 +53,20 @@ class MathPuzzle extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: MathGame(numberGenerator: numberGenerator),
+        child: MathGame(
+          numberGenerator: numberGenerator,
+          onPuzzleCompleted: onPuzzleCompleted,
+        ),
       ),
     );
   }
 }
 
 class MathGame extends StatefulWidget {
-  final NumberGenerator? numberGenerator; // Optional NumberGenerator instance for testing
+  final NumberGenerator? numberGenerator;
+  final VoidCallback? onPuzzleCompleted;
 
-  const MathGame({super.key, this.numberGenerator});
+  const MathGame({super.key, this.numberGenerator, this.onPuzzleCompleted});
 
   @override
   _MathGameState createState() => _MathGameState();
@@ -112,13 +121,18 @@ class _MathGameState extends State<MathGame> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          content: const Text("Correct! Next problem:"),
+          content: const Text("Correct!"),
           actions: [
             TextButton(
               key: const Key('ok_button'),
               onPressed: () {
-                Navigator.of(context).pop();
-                _generateNewProblem(); // Start new puzzle only if solved
+                Navigator.of(context).pop(); // Close dialog
+                if (widget.onPuzzleCompleted != null) {
+                  widget.onPuzzleCompleted!();
+                  Navigator.of(context).pop(); // Close the puzzle page
+                } else {
+                  _generateNewProblem(); // Continue with new problem
+                }
               },
               child: const Text("OK"),
             ),
@@ -222,11 +236,17 @@ class KeypadButton extends StatelessWidget {
   }
 }
 
+//////////////////////////////
+// Sudoku Puzzle Implementation
+//////////////////////////////
+
 // Sudoku Puzzle
 class SudokuPuzzle extends StatelessWidget {
+  final VoidCallback? onPuzzleCompleted;
   final List<List<int>>? predefinedSudoku; // Optional parameter for testing
 
-  const SudokuPuzzle({super.key, this.predefinedSudoku});
+  const SudokuPuzzle(
+      {super.key, this.onPuzzleCompleted, this.predefinedSudoku});
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +256,10 @@ class SudokuPuzzle extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SudokuBoard(predefinedSudoku: predefinedSudoku),
+        child: SudokuBoard(
+          predefinedSudoku: predefinedSudoku,
+          onPuzzleCompleted: onPuzzleCompleted,
+        ),
       ),
     );
   }
@@ -244,8 +267,10 @@ class SudokuPuzzle extends StatelessWidget {
 
 class SudokuBoard extends StatefulWidget {
   final List<List<int>>? predefinedSudoku; // Optional parameter for testing
+  final VoidCallback? onPuzzleCompleted;
 
-  const SudokuBoard({super.key, this.predefinedSudoku});
+  const SudokuBoard(
+      {super.key, this.predefinedSudoku, this.onPuzzleCompleted});
 
   @override
   _SudokuBoardState createState() => _SudokuBoardState();
@@ -263,14 +288,20 @@ class _SudokuBoardState extends State<SudokuBoard> {
 
   // Generates a new 4x4 Sudoku puzzle
   void _generatePuzzle() {
-    _solution = _generateValidSolution();
-    _board = List.generate(4, (i) => List<int?>.from(_solution[i]));
+    if (widget.predefinedSudoku != null) {
+      // Use predefined puzzle and solution
+      _solution = List.generate(4, (i) => List<int>.from(widget.predefinedSudoku![i]));
+      _board = List.generate(4, (i) => List<int?>.from(widget.predefinedSudoku![i]));
+    } else {
+      _solution = _generateValidSolution();
+      _board = List.generate(4, (i) => List<int?>.from(_solution[i]));
 
-    // Randomly remove some cells to create the puzzle
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-        if (Random().nextBool()) {
-          _board[i][j] = null; // Set some cells to null for the puzzle
+      // Randomly remove some cells to create the puzzle
+      for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+          if (Random().nextBool()) {
+            _board[i][j] = null; // Set some cells to null for the puzzle
+          }
         }
       }
     }
@@ -311,7 +342,12 @@ class _SudokuBoardState extends State<SudokuBoard> {
             key: const Key('ok_button'),
             onPressed: () {
               Navigator.of(context).pop();
-              if (correct) _generatePuzzle(); // Start new puzzle only if solved
+              if (correct && widget.onPuzzleCompleted != null) {
+                widget.onPuzzleCompleted!();
+                Navigator.of(context).pop(); // Close the puzzle page
+              } else if (correct) {
+                _generatePuzzle(); // Start new puzzle only if solved
+              }
             },
             child: const Text("OK"),
           ),
@@ -390,11 +426,17 @@ class _SudokuBoardState extends State<SudokuBoard> {
   }
 }
 
+//////////////////////////////
+// Maze Puzzle Implementation
+//////////////////////////////
+
 // Maze Puzzle
 class MazePuzzle extends StatelessWidget {
+  final VoidCallback? onPuzzleCompleted;
   final List<List<int>>? predefinedMaze; // Optional parameter for testing
 
-  const MazePuzzle({super.key, this.predefinedMaze});
+  const MazePuzzle(
+      {super.key, this.onPuzzleCompleted, this.predefinedMaze});
 
   @override
   Widget build(BuildContext context) {
@@ -404,7 +446,10 @@ class MazePuzzle extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: MazeBoard(predefinedMaze: predefinedMaze),
+        child: MazeBoard(
+          predefinedMaze: predefinedMaze,
+          onPuzzleCompleted: onPuzzleCompleted,
+        ),
       ),
     );
   }
@@ -412,8 +457,10 @@ class MazePuzzle extends StatelessWidget {
 
 class MazeBoard extends StatefulWidget {
   final List<List<int>>? predefinedMaze; // Optional parameter for testing
+  final VoidCallback? onPuzzleCompleted;
 
-  const MazeBoard({super.key, this.predefinedMaze});
+  const MazeBoard(
+      {super.key, this.predefinedMaze, this.onPuzzleCompleted});
 
   @override
   _MazeBoardState createState() => _MazeBoardState();
@@ -434,7 +481,7 @@ class _MazeBoardState extends State<MazeBoard> {
   void _generateMaze() {
     if (widget.predefinedMaze != null) {
       // Use predefined maze
-      _maze = widget.predefinedMaze!;
+      _maze = List.generate(mazeSize, (i) => List<int>.from(widget.predefinedMaze![i]));
       _playerX = 0;
       _playerY = 0;
     } else {
@@ -496,22 +543,27 @@ class _MazeBoardState extends State<MazeBoard> {
         _playerY = newY;
       });
       if (_maze[_playerX][_playerY] == 3) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            content: const Text("Congratulations! You reached the exit!"),
-            actions: [
-              TextButton(
-                key: const Key('new_maze_button'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _generateMaze(); // Start a new maze
-                },
-                child: const Text("New Maze"),
-              ),
-            ],
-          ),
-        );
+        if (widget.onPuzzleCompleted != null) {
+          widget.onPuzzleCompleted!();
+          Navigator.of(context).pop(); // Close the puzzle page
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              content: const Text("Congratulations! You reached the exit!"),
+              actions: [
+                TextButton(
+                  key: const Key('new_maze_button'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _generateMaze(); // Start a new maze
+                  },
+                  child: const Text("New Maze"),
+                ),
+              ],
+            ),
+          );
+        }
       }
     }
   }
@@ -599,9 +651,15 @@ class _MazeBoardState extends State<MazeBoard> {
   }
 }
 
+//////////////////////////////
+// Sorting Puzzle Implementation
+//////////////////////////////
+
 // Sorting Puzzle
 class SortingPuzzle extends StatelessWidget {
-  const SortingPuzzle({super.key});
+  final VoidCallback? onPuzzleCompleted;
+
+  const SortingPuzzle({super.key, this.onPuzzleCompleted});
 
   @override
   Widget build(BuildContext context) {
@@ -611,14 +669,18 @@ class SortingPuzzle extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SortingGame(),
+        child: SortingGame(
+          onPuzzleCompleted: onPuzzleCompleted,
+        ),
       ),
     );
   }
 }
 
 class SortingGame extends StatefulWidget {
-  const SortingGame({super.key});
+  final VoidCallback? onPuzzleCompleted;
+
+  const SortingGame({super.key, this.onPuzzleCompleted});
 
   @override
   _SortingPuzzleState createState() => _SortingPuzzleState();
@@ -691,7 +753,12 @@ class _SortingPuzzleState extends State<SortingGame> {
             key: const Key('play_again_button'),
             onPressed: () {
               Navigator.of(context).pop();
-              _generateNumbers(); // Generate a new puzzle
+              if (widget.onPuzzleCompleted != null) {
+                widget.onPuzzleCompleted!();
+                Navigator.of(context).pop(); // Close the puzzle page
+              } else {
+                _generateNumbers(); // Generate a new puzzle
+              }
             },
             child: const Text("Play Again"),
           ),
@@ -732,7 +799,8 @@ class _SortingPuzzleState extends State<SortingGame> {
                 child: Center(
                   child: Text(
                     _numbers[index].toString(),
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
