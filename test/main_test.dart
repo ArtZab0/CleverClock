@@ -249,10 +249,11 @@ void main() {
     });
 
     testWidgets('should solve Sudoku puzzle correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: SudokuPuzzle()));
+      // Define a predefined maze that can be solved
+      // For Sudoku, since the solution is random, it's complex to test
+      // Instead, simulate an incorrect solution and expect 'Incorrect solution!' dialog
 
-      // Since _generateValidSolution creates a randomized solution, it's challenging to input the correct answer.
-      // Instead, we can simulate entering incorrect values and expect 'Incorrect solution!' dialog.
+      await tester.pumpWidget(const MaterialApp(home: SudokuPuzzle()));
 
       // Press 'Check Solution' without entering any numbers
       await tester.tap(find.byKey(const Key('check_solution_button')));
@@ -339,7 +340,20 @@ void main() {
 
   group('Maze Puzzle Tests', () {
     testWidgets('should display initial Maze puzzle', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MazePuzzle()));
+      // Define a predefined maze that can be solved by moving right and down
+      final predefinedMaze = [
+        [2, 0, 1, 1, 1, 1, 1], // Start at (0,0)
+        [1, 0, 1, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 0, 0, 1, 0, 1],
+        [1, 1, 1, 0, 1, 0, 1],
+        [1, 0, 0, 0, 1, 0, 1],
+        [1, 1, 1, 0, 1, 0, 3], // Exit at (6,6)
+      ];
+
+      await tester.pumpWidget(MaterialApp(
+        home: MazePuzzle(predefinedMaze: predefinedMaze),
+      ));
 
       // Verify that the maze grid is displayed
       for (int x = 0; x < 7; x++) {
@@ -357,36 +371,55 @@ void main() {
     });
 
     testWidgets('should move player to exit', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MazePuzzle()));
+      // Define a predefined maze that allows moving right 6 times and down 6 times to reach exit
+      final predefinedMaze = [
+        [2, 0, 0, 0, 0, 0, 0], // Start at (0,0), open path to the right
+        [1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 1, 0],
+        [0, 1, 1, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 0, 3], // Exit at (6,6)
+      ];
 
-      // Since maze is randomly generated, it's difficult to predict the path.
-      // For testing, simulate moving the player right and down multiple times.
+      await tester.pumpWidget(MaterialApp(
+        home: MazePuzzle(predefinedMaze: predefinedMaze),
+      ));
 
-      for (int i = 0; i < 3; i++) {
+      // Move right 6 times
+      for (int i = 0; i < 6; i++) {
         await tester.tap(find.byKey(const Key('move_right_button')));
         await tester.pump();
       }
 
-      for (int i = 0; i < 3; i++) {
+      // Move down 6 times
+      for (int i = 0; i < 6; i++) {
         await tester.tap(find.byKey(const Key('move_down_button')));
         await tester.pump();
       }
 
-      // Verify player has moved (color blue should be in a new cell)
-      final playerCell = find.byWidgetPredicate((widget) {
-        if (widget is Container) {
-          return widget.color == Colors.blue;
-        }
-        return false;
-      });
-
-      expect(playerCell, findsOneWidget);
+      // Verify player has reached the exit and dialog is shown
+      await tester.pumpAndSettle();
+      expect(find.text("Congratulations! You reached the exit!"), findsOneWidget);
     });
 
     testWidgets('should not move player into walls', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MazePuzzle()));
+      // Define a predefined maze with walls around the start
+      final predefinedMaze = [
+        [2, 1, 1, 1, 1, 1, 1], // Start at (0,0) surrounded by walls
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 3], // Exit at (6,6)
+      ];
 
-      // Attempt to move player left and up from the starting position (0,0)
+      await tester.pumpWidget(MaterialApp(
+        home: MazePuzzle(predefinedMaze: predefinedMaze),
+      ));
+
+      // Attempt to move left and up from the starting position (0,0)
       await tester.tap(find.byKey(const Key('move_left_button')));
       await tester.pump();
 
@@ -394,32 +427,41 @@ void main() {
       await tester.pump();
 
       // Player should still be at (0,0)
-      final playerCell = find.byWidgetPredicate((widget) {
-        if (widget is Container) {
-          return widget.color == Colors.blue;
-        }
-        return false;
-      });
-
-      // Verify that the player is still at the start cell
-      final startCell = find.byKey(const Key('maze_cell_0_0'));
-      expect(
-          tester.widget<Container>(startCell).color, equals(Colors.blue));
+      final playerCell = find.byKey(const Key('maze_cell_0_0'));
+      expect(tester.widget<Container>(playerCell).color, equals(Colors.blue));
 
       // Ensure no other cell is blue
-      expect(playerCell, findsOneWidget);
+      expect(find.byWidgetPredicate((widget) {
+        if (widget is Container) {
+          return widget.color == Colors.blue && widget.key != const Key('maze_cell_0_0');
+        }
+        return false;
+      }), findsNothing);
     });
 
     testWidgets('should show "Congratulations! You reached the exit!" when reaching exit', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MazePuzzle()));
+      // Define a predefined maze that allows moving right 6 times and down 6 times to reach exit
+      final predefinedMaze = [
+        [2, 0, 0, 0, 0, 0, 0], // Start at (0,0), open path to the right
+        [1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 1, 0],
+        [0, 1, 1, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 0, 3], // Exit at (6,6)
+      ];
 
-      // Since the maze is random, simulate reaching the exit by moving right and down to the end.
+      await tester.pumpWidget(MaterialApp(
+        home: MazePuzzle(predefinedMaze: predefinedMaze),
+      ));
 
+      // Move right 6 times
       for (int i = 0; i < 6; i++) {
         await tester.tap(find.byKey(const Key('move_right_button')));
         await tester.pump();
       }
 
+      // Move down 6 times
       for (int i = 0; i < 6; i++) {
         await tester.tap(find.byKey(const Key('move_down_button')));
         await tester.pump();
@@ -587,7 +629,6 @@ void main() {
 
       if (initialNumbers.toString() != sortedNumbers.toString()) {
         // Do not sort the list
-        // Press 'Check Solution' if such a button exists, but in current implementation, there's no 'Check' button
         // The game checks on every swap. Thus, if not sorted, no dialog should appear
 
         // Thus, verify that 'Congratulations' dialog is not shown
@@ -600,14 +641,14 @@ void main() {
   group('Main Screen Tests', () {
     testWidgets('should display "No alarms set" when there are no alarms',
             (WidgetTester tester) async {
-          await tester.pumpWidget(const MyApp());
+          await tester.pumpWidget(const MaterialApp(home: MyApp()));
 
           expect(find.text('No alarms set. Tap + to add a new alarm.'), findsOneWidget);
         });
 
     testWidgets('should navigate to Set Alarm screen when FAB is tapped',
             (WidgetTester tester) async {
-          await tester.pumpWidget(const MyApp());
+          await tester.pumpWidget(const MaterialApp(home: MyApp()));
 
           // Tap the FAB
           await tester.tap(find.byType(FloatingActionButton));
@@ -702,14 +743,4 @@ void main() {
       expect(find.byType(Settings), findsOneWidget);
     });
   });
-}
-
-// Helper function to determine maze cell type based on color
-int _getMazeCellType(Color? color) {
-  if (color == Colors.black) return 1; // Wall
-  if (color == Colors.white) return 0; // Path
-  if (color == Colors.red) return 2; // Start
-  if (color == Colors.green) return 3; // Exit
-  if (color == Colors.blue) return 4; // Player
-  return -1; // Unknown
 }

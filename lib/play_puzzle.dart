@@ -161,7 +161,9 @@ class KeypadButton extends StatelessWidget {
 // Sudoku game added
 
 class SudokuPuzzle extends StatelessWidget {
-  const SudokuPuzzle({super.key});
+  final List<List<int>>? predefinedMaze; // Optional parameter for testing
+
+  const SudokuPuzzle({super.key, this.predefinedMaze});
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +241,7 @@ class _SudokuBoardState extends State<SudokuBoard> {
         content: Text(correct ? 'Puzzle Solved!' : 'Incorrect solution!'),
         actions: [
           TextButton(
+            key: const Key('ok_button'),
             onPressed: () {
               Navigator.of(context).pop();
               if (correct) _generatePuzzle(); // Start new puzzle only if solved
@@ -254,49 +257,51 @@ class _SudokuBoardState extends State<SudokuBoard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Sudoku grid
-        GridView.builder(
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            childAspectRatio: 1.0,
+        // Sudoku grid wrapped in Expanded to prevent overflow
+        Expanded(
+          child: GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: 16,
+            itemBuilder: (context, index) {
+              int row = index ~/ 4;
+              int col = index % 4;
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: _board[row][col] != null
+                    ? Container(
+                  key: Key('cell_${row}_$col'),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                    color: Colors.grey[300],
+                  ),
+                  child: Center(
+                      child: Text(
+                        '${_board[row][col]}',
+                        style: const TextStyle(fontSize: 24),
+                      )),
+                )
+                    : TextField(
+                  key: Key('input_cell_${row}_$col'),
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 24),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      // Allow the user to clear the value or enter a new number
+                      _board[row][col] = int.tryParse(value);
+                    });
+                  },
+                ),
+              );
+            },
           ),
-          itemCount: 16,
-          itemBuilder: (context, index) {
-            int row = index ~/ 4;
-            int col = index % 4;
-            return Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: _board[row][col] != null
-                  ? Container(
-                key: Key('cell_${row}_$col'),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  color: Colors.grey[300],
-                ),
-                child: Center(
-                    child: Text(
-                      '${_board[row][col]}',
-                      style: const TextStyle(fontSize: 24),
-                    )),
-              )
-                  : TextField(
-                key: Key('input_cell_${row}_$col'),
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    // Allow the user to clear the value or enter a new number
-                    _board[row][col] = int.tryParse(value);
-                  });
-                },
-              ),
-            );
-          },
         ),
         const SizedBox(height: 20),
         ElevatedButton(
@@ -318,7 +323,9 @@ class _SudokuBoardState extends State<SudokuBoard> {
 // Maze Game added
 
 class MazePuzzle extends StatelessWidget {
-  const MazePuzzle({super.key});
+  final List<List<int>>? predefinedMaze; // Optional parameter for testing
+
+  const MazePuzzle({super.key, this.predefinedMaze});
 
   @override
   Widget build(BuildContext context) {
@@ -328,14 +335,16 @@ class MazePuzzle extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: MazeBoard(),
+        child: MazeBoard(predefinedMaze: predefinedMaze),
       ),
     );
   }
 }
 
 class MazeBoard extends StatefulWidget {
-  const MazeBoard({super.key});
+  final List<List<int>>? predefinedMaze; // Optional parameter for testing
+
+  const MazeBoard({super.key, this.predefinedMaze});
 
   @override
   _MazeBoardState createState() => _MazeBoardState();
@@ -354,13 +363,21 @@ class _MazeBoardState extends State<MazeBoard> {
 
   // Maze cell types: 0 = open path, 1 = wall, 2 = start, 3 = exit
   void _generateMaze() {
-    _maze = List.generate(mazeSize, (_) => List<int>.filled(mazeSize, 1));
-    _playerX = 0;
-    _playerY = 0;
-    _maze[0][0] = 2; // Start
-    _maze[mazeSize - 1][mazeSize - 1] = 3; // Exit
-    _carvePath(0, 0);
-    _ensureExitAccessibility();
+    if (widget.predefinedMaze != null) {
+      // Use predefined maze
+      _maze = widget.predefinedMaze!;
+      _playerX = 0;
+      _playerY = 0;
+    } else {
+      // Generate random maze
+      _maze = List.generate(mazeSize, (_) => List<int>.filled(mazeSize, 1));
+      _playerX = 0;
+      _playerY = 0;
+      _maze[0][0] = 2; // Start
+      _maze[mazeSize - 1][mazeSize - 1] = 3; // Exit
+      _carvePath(0, 0);
+      _ensureExitAccessibility();
+    }
     setState(() {});
   }
 
@@ -434,7 +451,7 @@ class _MazeBoardState extends State<MazeBoard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Maze grid
+        // Maze grid wrapped in Expanded to prevent overflow
         Expanded(
           child: GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
