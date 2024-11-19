@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math'; // For generating random numbers
 
-
 class MathPuzzle extends StatelessWidget {
   const MathPuzzle({super.key});
 
@@ -18,7 +17,6 @@ class MathPuzzle extends StatelessWidget {
     );
   }
 }
-
 
 class MathGame extends StatefulWidget {
   const MathGame({super.key});
@@ -74,56 +72,59 @@ class _MathGameState extends State<MathGame> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Display the problem
-        Text(
-          '$_num1 + $_num2 = ?',
-          style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        // Display the user's current input
-        Text(
-          _input,
-          style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        // Display a message to guide the user
-        Text(
-          _message,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
-        ),
-        const SizedBox(height: 20),
-        // Keypad grid layout
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          children: <Widget>[
-            ...List.generate(9, (index) {
-              return KeypadButton(
-                label: '${index + 1}',
-                onPressed: () => _onKeyPressed('${index + 1}'),
-              );
-            }),
-            KeypadButton(
-              label: '0',
-              onPressed: () => _onKeyPressed('0'),
-            ),
-            KeypadButton(
-              label: 'Clear',
-              onPressed: () {
-                setState(() {
-                  _input = "";
-                });
-              },
-            ),
-            KeypadButton(
-              label: 'Enter',
-              onPressed: _checkAnswer, // Check the answer when 'Enter' is pressed
-            ),
-          ],
-        ),
-      ],
+    return SingleChildScrollView( // Added to prevent overflow
+      child: Column(
+        children: [
+          // Display the problem
+          Text(
+            '$_num1 + $_num2 = ?',
+            style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          // Display the user's current input
+          Text(
+            _input,
+            style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          // Display a message to guide the user
+          Text(
+            _message,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
+          ),
+          const SizedBox(height: 20),
+          // Constrain the GridView within available space using Expanded
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
+            children: <Widget>[
+              ...List.generate(9, (index) {
+                return KeypadButton(
+                  label: '${index + 1}',
+                  onPressed: () => _onKeyPressed('${index + 1}'),
+                );
+              }),
+              KeypadButton(
+                label: '0',
+                onPressed: () => _onKeyPressed('0'),
+              ),
+              KeypadButton(
+                label: 'Clear',
+                onPressed: () {
+                  setState(() {
+                    _input = "";
+                  });
+                },
+              ),
+              KeypadButton(
+                label: 'Enter',
+                onPressed: _checkAnswer, // Check the answer when 'Enter' is pressed
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -141,11 +142,14 @@ class KeypadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(label, style: const TextStyle(fontSize: 24)),
+    return SizedBox(
+      width: double.infinity, // Make buttons expand to fill the Grid cell
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          child: Text(label, style: const TextStyle(fontSize: 24)),
+        ),
       ),
     );
   }
