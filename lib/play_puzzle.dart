@@ -72,7 +72,7 @@ class _MathGameState extends State<MathGame> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView( // Added to prevent overflow
+    return SingleChildScrollView( // Wrap Column to prevent overflow
       child: Column(
         children: [
           // Display the problem
@@ -93,11 +93,11 @@ class _MathGameState extends State<MathGame> {
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
           ),
           const SizedBox(height: 20),
-          // Constrain the GridView within available space using Expanded
+          // Keypad grid layout
           GridView.count(
             crossAxisCount: 3,
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
+            physics: const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling separately
             children: <Widget>[
               ...List.generate(9, (index) {
                 return KeypadButton(
@@ -142,18 +142,16 @@ class KeypadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity, // Make buttons expand to fill the Grid cell
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ElevatedButton(
-          onPressed: onPressed,
-          child: Text(label, style: const TextStyle(fontSize: 24)),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(4.0), // Adjusted padding for better fit
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(label, style: const TextStyle(fontSize: 24)),
       ),
     );
   }
 }
+
 
 
 

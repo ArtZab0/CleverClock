@@ -1,10 +1,8 @@
-// test/main_test.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:untitled/main.dart';
 import 'package:untitled/set_alarm.dart';
-import 'package:untitled/play_puzzle.dart'; // Ensure this points to your play_puzzle.dart file
+import 'package:untitled/play_puzzle.dart'; // Assuming the file name remains the same
 import 'package:untitled/settings.dart';
 
 void main() {
@@ -31,12 +29,16 @@ void main() {
       // Simulate entering the correct answer
       final answerString = correctAnswer.toString();
       for (int i = 0; i < answerString.length; i++) {
-        await tester.tap(find.widgetWithText(ElevatedButton, answerString[i]));
+        final digitButton = find.widgetWithText(ElevatedButton, answerString[i]);
+        await tester.ensureVisible(digitButton);
+        await tester.tap(digitButton);
         await tester.pump();
       }
 
       // Press 'Enter'
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Enter'));
+      final enterButton = find.widgetWithText(ElevatedButton, 'Enter');
+      await tester.ensureVisible(enterButton);
+      await tester.tap(enterButton);
       await tester.pumpAndSettle();
 
       // Verify that the correct message is shown
@@ -63,12 +65,16 @@ void main() {
       final wrongAnswer = correctAnswer + 1;
       final answerString = wrongAnswer.toString();
       for (int i = 0; i < answerString.length; i++) {
-        await tester.tap(find.widgetWithText(ElevatedButton, answerString[i]));
+        final digitButton = find.widgetWithText(ElevatedButton, answerString[i]);
+        await tester.ensureVisible(digitButton);
+        await tester.tap(digitButton);
         await tester.pump();
       }
 
       // Press 'Enter'
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Enter'));
+      final enterButton = find.widgetWithText(ElevatedButton, 'Enter');
+      await tester.ensureVisible(enterButton);
+      await tester.tap(enterButton);
       await tester.pump();
 
       // Verify that the incorrect message is shown
@@ -83,16 +89,23 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Simulate entering some digits
-      await tester.tap(find.widgetWithText(ElevatedButton, '1'));
+      final oneButton = find.widgetWithText(ElevatedButton, '1');
+      await tester.ensureVisible(oneButton);
+      await tester.tap(oneButton);
       await tester.pump();
-      await tester.tap(find.widgetWithText(ElevatedButton, '2'));
+
+      final twoButton = find.widgetWithText(ElevatedButton, '2');
+      await tester.ensureVisible(twoButton);
+      await tester.tap(twoButton);
       await tester.pump();
 
       // Verify input shows '12'
       expect(find.text('12'), findsOneWidget);
 
       // Press 'Clear'
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Clear'));
+      final clearButton = find.widgetWithText(ElevatedButton, 'Clear');
+      await tester.ensureVisible(clearButton);
+      await tester.tap(clearButton);
       await tester.pump();
 
       // Verify input is cleared
@@ -103,9 +116,14 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Simulate entering a multi-digit number
-      await tester.tap(find.widgetWithText(ElevatedButton, '1'));
+      final oneButton = find.widgetWithText(ElevatedButton, '1');
+      await tester.ensureVisible(oneButton);
+      await tester.tap(oneButton);
       await tester.pump();
-      await tester.tap(find.widgetWithText(ElevatedButton, '0'));
+
+      final zeroButton = find.widgetWithText(ElevatedButton, '0');
+      await tester.ensureVisible(zeroButton);
+      await tester.tap(zeroButton);
       await tester.pump();
 
       // Verify input shows '10'
@@ -127,12 +145,16 @@ void main() {
 
       final answerString = correctAnswer.toString();
       for (int i = 0; i < answerString.length; i++) {
-        await tester.tap(find.widgetWithText(ElevatedButton, answerString[i]));
+        final digitButton = find.widgetWithText(ElevatedButton, answerString[i]);
+        await tester.ensureVisible(digitButton);
+        await tester.tap(digitButton);
         await tester.pump();
       }
 
       // Press 'Enter'
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Enter'));
+      final enterButton = find.widgetWithText(ElevatedButton, 'Enter');
+      await tester.ensureVisible(enterButton);
+      await tester.tap(enterButton);
       await tester.pumpAndSettle();
 
       // Verify that a new problem is displayed
@@ -155,12 +177,16 @@ void main() {
         // Enter correct answer
         final answerString = correctAnswer.toString();
         for (int j = 0; j < answerString.length; j++) {
-          await tester.tap(find.widgetWithText(ElevatedButton, answerString[j]));
+          final digitButton = find.widgetWithText(ElevatedButton, answerString[j]);
+          await tester.ensureVisible(digitButton);
+          await tester.tap(digitButton);
           await tester.pump();
         }
 
         // Press 'Enter'
-        await tester.tap(find.widgetWithText(ElevatedButton, 'Enter'));
+        final enterButton = find.widgetWithText(ElevatedButton, 'Enter');
+        await tester.ensureVisible(enterButton);
+        await tester.tap(enterButton);
         await tester.pumpAndSettle();
 
         // Verify correct message
@@ -175,13 +201,20 @@ void main() {
       final problemText = tester.widget<Text>(find.textContaining('= ?')).data!;
 
       // Enter incorrect answer
-      await tester.tap(find.widgetWithText(ElevatedButton, '9'));
+      final nineButton = find.widgetWithText(ElevatedButton, '9');
+      await tester.ensureVisible(nineButton);
+      await tester.tap(nineButton);
       await tester.pump();
-      await tester.tap(find.widgetWithText(ElevatedButton, '9'));
+
+      final nineButton2 = find.widgetWithText(ElevatedButton, '9');
+      await tester.ensureVisible(nineButton2);
+      await tester.tap(nineButton2);
       await tester.pump();
 
       // Press 'Enter'
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Enter'));
+      final enterButton = find.widgetWithText(ElevatedButton, 'Enter');
+      await tester.ensureVisible(enterButton);
+      await tester.tap(enterButton);
       await tester.pump();
 
       // Verify incorrect message
