@@ -107,10 +107,10 @@ class _SetAlarmState extends State<SetAlarm> {
             // Save Button
             ElevatedButton(
               onPressed: _saveAlarm,
-              child: const Text('Save Alarm'),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50), // Make button full width
               ),
+              child: const Text('Save Alarm'),
             ),
           ],
         ),

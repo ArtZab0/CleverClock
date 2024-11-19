@@ -10,7 +10,7 @@ void main() {
   AwesomeNotifications().initialize(
     null,
     [
-      NotificationChannel(channelKey: 'basic_channel', channelName: 'Basic notifications', channelDescription: 'Notification channel for basic tests', defaultColor: Color(0xFF9D50DD), ledColor: Colors.white)
+      NotificationChannel(channelKey: 'basic_channel', channelName: 'Basic notifications', channelDescription: 'Notification channel for basic tests', defaultColor: const Color(0xFF9D50DD), ledColor: Colors.white)
     ],
     debug: true,
   );
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
   
-  List<Alarm> _alarms = [];
+  final List<Alarm> _alarms = [];
 
   // Function to add a new alarm
   void _addAlarm(Alarm alarm) {
@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Settings()),
+                MaterialPageRoute(builder: (context) => const Settings()),
               );
             },
           ),
