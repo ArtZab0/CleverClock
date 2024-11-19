@@ -1,11 +1,13 @@
+// settings.dart
 import 'package:flutter/material.dart';
-
+import 'puzzle_queue_management.dart'; // Import the PuzzleQueueManagementPage
 
 class Settings extends StatefulWidget {
+  const Settings({super.key}); // Added const constructor
+
   @override
   _SettingsState createState() => _SettingsState();
 }
-
 
 class _SettingsState extends State<Settings> {
   bool _parentControlEnabled = false;
@@ -28,25 +30,32 @@ class _SettingsState extends State<Settings> {
         TextEditingController _passwordController = TextEditingController();
 
         return AlertDialog(
-          title: Text("Create Parent Password"),
+          title: const Text("Create Parent Password"),
           content: TextField(
             controller: _passwordController,
             obscureText: true,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: "Enter Password",
             ),
           ),
           actions: [
             TextButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
                 _toggleParentControl(false); // Disable parent control if cancelled
               },
             ),
             TextButton(
-              child: Text("Set Password"),
+              child: const Text("Set Password"),
               onPressed: () {
+                if (_passwordController.text.trim().isEmpty) {
+                  // Prevent setting empty password
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Password cannot be empty")),
+                  );
+                  return;
+                }
                 setState(() {
                   _parentPassword = _passwordController.text;
                   _parentControlEnabled = true; // Enable parent control
@@ -68,23 +77,23 @@ class _SettingsState extends State<Settings> {
         TextEditingController _passwordController = TextEditingController();
 
         return AlertDialog(
-          title: Text("Enter Password to Disable"),
+          title: const Text("Enter Password to Disable"),
           content: TextField(
             controller: _passwordController,
             obscureText: true,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: "Enter Password",
             ),
           ),
           actions: [
             TextButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text("Submit"),
+              child: const Text("Submit"),
               onPressed: () {
                 if (_passwordController.text == _parentPassword) {
                   setState(() {
@@ -95,7 +104,7 @@ class _SettingsState extends State<Settings> {
                 } else {
                   // Incorrect password feedback
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Incorrect Password")),
+                    const SnackBar(content: Text("Incorrect Password")),
                   );
                 }
               },
@@ -118,17 +127,17 @@ class _SettingsState extends State<Settings> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SwitchListTile(
-              title: Text("Enable Parent Control"),
+              title: const Text("Enable Parent Control"),
               value: _parentControlEnabled,
               onChanged: (bool value) {
                 _toggleParentControl(value);
               },
             ),
             if (_parentControlEnabled && _parentPassword.isNotEmpty)
-              Text("Password set!"),
-            Divider(),
+              const Text("Password set!"),
+            const Divider(),
             SwitchListTile(
-              title: Text("Enable Snooze Button"),
+              title: const Text("Enable Snooze Button"),
               value: _snoozeEnabled,
               onChanged: (bool value) {
                 setState(() {
@@ -136,8 +145,22 @@ class _SettingsState extends State<Settings> {
                 });
               },
             ),
-            Spacer(),
-            // The button for setting alarms will be on the home page as specified
+            const Divider(),
+            ListTile(
+              title: const Text("Puzzle Queue"),
+              subtitle: const Text("Manage your puzzle queue"),
+              leading: const Icon(Icons.queue),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                      const PuzzleQueueManagementPage()),
+                );
+              },
+            ),
+            const Spacer(),
+            // The button for setting alarms is on the home page
           ],
         ),
       ),
