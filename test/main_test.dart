@@ -1,8 +1,10 @@
+// test/main_test.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:untitled/main.dart';
 import 'package:untitled/set_alarm.dart';
-import 'package:untitled/play_puzzle.dart'; // Assuming the file name remains the same
+import 'package:untitled/play_puzzle.dart'; // Ensure this points to your play_puzzle.dart file
 import 'package:untitled/settings.dart';
 
 void main() {
