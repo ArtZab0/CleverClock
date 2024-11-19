@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:untitled/main.dart';
 import 'package:untitled/set_alarm.dart';
-import 'package:untitled/play_puzzle.dart';
+import 'package:untitled/play_puzzle.dart'; // Assuming the file name remains the same
 import 'package:untitled/settings.dart';
 
 void main() {
   group('Puzzle Screen Tests', () {
     testWidgets('should display initial math problem', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Verify that the problem is displayed
       expect(find.textContaining('= ?'), findsOneWidget);
     });
 
     testWidgets('should accept correct answer and generate new problem', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the initial problem
       final problemText = tester.widget<Text>(find.textContaining('= ?')).data!;
@@ -46,7 +46,7 @@ void main() {
     });
 
     testWidgets('should show incorrect message for wrong answer', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the initial problem
       final problemText = tester.widget<Text>(find.textContaining('= ?')).data!;
@@ -78,7 +78,7 @@ void main() {
     });
 
     testWidgets('should clear input when Clear button is pressed', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Simulate entering some digits
       await tester.tap(find.widgetWithText(ElevatedButton, '1'));
@@ -98,7 +98,7 @@ void main() {
     });
 
     testWidgets('should accept multiple digit answers', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Simulate entering a multi-digit number
       await tester.tap(find.widgetWithText(ElevatedButton, '1'));
@@ -111,7 +111,7 @@ void main() {
     });
 
     testWidgets('should generate new problem after correct answer', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the initial problem
       final initialProblemText = tester.widget<Text>(find.textContaining('= ?')).data!;
@@ -139,7 +139,7 @@ void main() {
     });
 
     testWidgets('should handle rapid correct answers', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       for (int i = 0; i < 5; i++) {
         // Get the current problem
@@ -167,7 +167,7 @@ void main() {
     });
 
     testWidgets('should not advance to next problem on incorrect answer', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: PlayPuzzle()));
+      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the current problem
       final problemText = tester.widget<Text>(find.textContaining('= ?')).data!;
