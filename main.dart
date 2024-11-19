@@ -17,13 +17,13 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-                title: Text("Login Screen")
+                title: const Text("Login Screen")
             ),
             body: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                       'Login',
                       style: TextStyle(
                           fontSize: 35,
@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
                               padding: const EdgeInsets.symmetric(horizontal: 15),
                               child: TextFormField(
                                 keyboardType: TextInputType.emailAddress,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: 'email',
                                   hintText: 'Enter email',
                                   prefixIcon: Icon(Icons.email),
@@ -56,13 +56,13 @@ class _MyAppState extends State<MyApp> {
                               ),
                             ),
 
-                            SizedBox(height: 30,),
+                            const SizedBox(height: 30,),
 
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 15),
                               child: TextFormField(
                                 keyboardType: TextInputType.visiblePassword,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: 'Password',
                                   hintText: 'Enter password',
                                   prefixIcon: Icon(Icons.password),
@@ -76,16 +76,16 @@ class _MyAppState extends State<MyApp> {
                                 },
                               ),
                             ),
-                            SizedBox(height: 30,),
+                            const SizedBox(height: 30,),
 
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 35),
                               child: MaterialButton(
                                 minWidth: double.infinity,
                                 onPressed: () {},
-                                child: Text('Login'),
                                 color: Colors.purple,
                                 textColor: Colors.white,
+                                child: const Text('Login'),
                               ),
                             )
 

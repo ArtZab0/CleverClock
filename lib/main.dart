@@ -1,51 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:math'; // For generating random numbers
 import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'alarm_page.dart';
-
-
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-void handleNotificationClick(BuildContext context, ReceivedNotification receivedNotification) {
-  // Extract the target page from the payload
-  String? targetPage = receivedNotification.payload?['page'];
-  if (targetPage != null) {
-    switch (targetPage) {
-      case 'alarm':
-      // Navigate to the desired page
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AlarmPage(),
-        ));
-        break;
-
-      default:
-        print("Unknown page: $targetPage");
-    }
-  }
-}
-
-AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(channelKey: 'basic_channel', channelName: 'Basic notifications', channelDescription: 'Notification channel for basic tests', defaultColor: Color(0xFF9D50DD), ledColor: Colors.white)
-    ],
-    debug: true,
-  );
-  AwesomeNotifications().setListeners(
-    onActionReceivedMethod: (ReceivedAction receivedAction) async {
-      handleNotificationClick(navigatorKey.currentContext!, receivedAction);
-      return;
-    },
-  );
-
-  runApp(const MyApp());
-}
 
 // Alarm model
 class Alarm {
@@ -60,6 +18,23 @@ class Alarm {
   });
 }
 
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+          channelKey: 'basic_channel',
+          channelName: 'Basic notifications',
+          channelDescription: 'Notification channel for basic tests',
+          defaultColor: Color(0xFF9D50DD),
+          ledColor: Colors.white)
+    ],
+    debug: true,
+  );
+  runApp(const MyApp());
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -71,7 +46,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      navigatorKey: navigatorKey,
       home: const MyHomePage(title: 'Alarms'),
     );
   }
@@ -97,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     super.initState();
   }
-  
+
   List<Alarm> _alarms = [];
 
   // Function to add a new alarm
@@ -154,62 +128,15 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           ),
-
-          /*
           IconButton(
             icon: const Icon(Icons.videogame_asset),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const PlayPuzzle()),
+                MaterialPageRoute(builder: (context) => const MathPuzzle()),
               );
             },
           ),
-          */
-
-          ElevatedButton(
-              onPressed: () {
-                // Navigate to the new page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  const MathPuzzle()),
-                );
-              },
-              child: const Text("Math"),
-            ),
-
-              ElevatedButton(
-              onPressed: () {
-                // Navigate to the new page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  const SudokuPuzzle()),
-                );
-              },
-              child: const Text("Sudoku"),
-            ),
-
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the new page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  const MazePuzzle()),
-                );
-              },
-              child: const Text("Maze"),
-            ),
-
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the new page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  const SortingPuzzle()),
-                );
-              },
-              child: const Text("Sorting"),
-            ),
         ],
       ),
       body: _alarms.isEmpty
@@ -248,17 +175,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color:
-                  alarm.isActive ? Colors.black : Colors.grey.shade600,
+                  color: alarm.isActive ? Colors.black : Colors.grey.shade600,
                 ),
               ),
               subtitle: alarm.label.isNotEmpty
                   ? Text(
                 alarm.label,
                 style: TextStyle(
-                  color: alarm.isActive
-                      ? Colors.black
-                      : Colors.grey.shade600,
+                  color: alarm.isActive ? Colors.black : Colors.grey.shade600,
                 ),
               )
                   : null,
@@ -268,8 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _toggleAlarm(index, value);
                 },
               ),
-              onTap: () {
-              },
+              onTap: () {},
             ),
           );
         },
