@@ -3,17 +3,47 @@ import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'alarm_page.dart';
+
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  AwesomeNotifications().initialize(
+
+void handleNotificationClick(BuildContext context, ReceivedNotification receivedNotification) {
+  // Extract the target page from the payload
+  String? targetPage = receivedNotification.payload?['page'];
+  if (targetPage != null) {
+    switch (targetPage) {
+      case 'alarm':
+      // Navigate to the desired page
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AlarmPage(),
+        ));
+        break;
+
+      default:
+        print("Unknown page: $targetPage");
+    }
+  }
+}
+
+AwesomeNotifications().initialize(
     null,
     [
       NotificationChannel(channelKey: 'basic_channel', channelName: 'Basic notifications', channelDescription: 'Notification channel for basic tests', defaultColor: Color(0xFF9D50DD), ledColor: Colors.white)
     ],
     debug: true,
   );
+  AwesomeNotifications().setListeners(
+    onActionReceivedMethod: (ReceivedAction receivedAction) async {
+      handleNotificationClick(navigatorKey.currentContext!, receivedAction);
+      return;
+    },
+  );
+
   runApp(const MyApp());
 }
 
@@ -41,6 +71,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      navigatorKey: navigatorKey,
       home: const MyHomePage(title: 'Alarms'),
     );
   }

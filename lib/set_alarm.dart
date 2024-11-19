@@ -63,6 +63,7 @@ class _SetAlarmState extends State<SetAlarm> {
         title: label,
         body: 'Clever Clock Alarm',
         category: NotificationCategory.Alarm,
+        payload: {'page': 'alarm',},
       ),
       schedule: NotificationCalendar(
         timeZone: "America/New_York",
@@ -74,6 +75,7 @@ class _SetAlarmState extends State<SetAlarm> {
       )
     );
   }
+
 
 
   @override
