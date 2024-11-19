@@ -60,10 +60,22 @@ class _MathGameState extends State<MathGame> {
   // This method checks if the user's answer is correct
   void _checkAnswer() {
     if (_input.isNotEmpty && int.tryParse(_input) == _correctAnswer) {
-      setState(() {
-        _message = "Correct! Next problem:";
-        _generateNewProblem(); // Generate a new problem
-      });
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: const Text("Correct! Next problem:"),
+          actions: [
+            TextButton(
+              key: const Key('ok_button'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _generateNewProblem(); // Start new puzzle only if solved
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
     } else {
       setState(() {
         _message = "Incorrect! Try again.";

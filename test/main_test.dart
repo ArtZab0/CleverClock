@@ -43,8 +43,14 @@ void main() {
       await tester.tap(enterButton);
       await tester.pumpAndSettle();
 
-      // Verify that the correct message is shown
+      // Verify that the correct message is shown in the dialog
       expect(find.text('Correct! Next problem:'), findsOneWidget);
+
+      // Press 'OK' in the dialog to generate a new problem
+      final okButton = find.byKey(const Key('ok_button'));
+      expect(okButton, findsOneWidget);
+      await tester.tap(okButton);
+      await tester.pumpAndSettle();
 
       // Verify that a new problem is generated
       final newProblemTextWidget = find.byKey(const Key('problem_text'));
@@ -200,8 +206,19 @@ void main() {
         await tester.tap(enterButton);
         await tester.pumpAndSettle();
 
-        // Verify correct message
+        // Verify correct message in dialog
         expect(find.text('Correct! Next problem:'), findsOneWidget);
+
+        // Press 'OK' in the dialog to generate a new problem
+        final okButton = find.byKey(const Key('ok_button'));
+        expect(okButton, findsOneWidget);
+        await tester.tap(okButton);
+        await tester.pumpAndSettle();
+
+        // Verify that a new problem is generated
+        final newProblemTextWidget = find.byKey(const Key('problem_text'));
+        final newProblemText = tester.widget<Text>(newProblemTextWidget).data!;
+        expect(newProblemText, isNot(equals(problemText)));
       }
     });
 
