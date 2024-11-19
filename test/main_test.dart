@@ -18,7 +18,9 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the initial problem
-      final problemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final problemTextWidget = find.byKey(const Key('problem_text'));
+      expect(problemTextWidget, findsOneWidget);
+      final problemText = tester.widget<Text>(problemTextWidget).data!;
       final RegExp problemRegExp = RegExp(r'(\d+)\s\+\s(\d+)\s=\s\?');
       final match = problemRegExp.firstMatch(problemText);
       expect(match, isNotNull);
@@ -45,7 +47,8 @@ void main() {
       expect(find.text('Correct! Next problem:'), findsOneWidget);
 
       // Verify that a new problem is generated
-      final newProblemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final newProblemTextWidget = find.byKey(const Key('problem_text'));
+      final newProblemText = tester.widget<Text>(newProblemTextWidget).data!;
       expect(newProblemText, isNot(equals(problemText)));
     });
 
@@ -53,7 +56,9 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the initial problem
-      final problemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final problemTextWidget = find.byKey(const Key('problem_text'));
+      expect(problemTextWidget, findsOneWidget);
+      final problemText = tester.widget<Text>(problemTextWidget).data!;
       final RegExp problemRegExp = RegExp(r'(\d+)\s\+\s(\d+)\s=\s\?');
       final match = problemRegExp.firstMatch(problemText);
       expect(match, isNotNull);
@@ -81,7 +86,8 @@ void main() {
       expect(find.text('Incorrect! Try again.'), findsOneWidget);
 
       // Verify that the problem stays the same
-      final currentProblemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final currentProblemTextWidget = find.byKey(const Key('problem_text'));
+      final currentProblemText = tester.widget<Text>(currentProblemTextWidget).data!;
       expect(currentProblemText, equals(problemText));
     });
 
@@ -134,7 +140,9 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the initial problem
-      final initialProblemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final initialProblemTextWidget = find.byKey(const Key('problem_text'));
+      expect(initialProblemTextWidget, findsOneWidget);
+      final initialProblemText = tester.widget<Text>(initialProblemTextWidget).data!;
 
       // Solve the problem correctly
       final RegExp problemRegExp = RegExp(r'(\d+)\s\+\s(\d+)\s=\s\?');
@@ -158,7 +166,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify that a new problem is displayed
-      final newProblemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final newProblemTextWidget = find.byKey(const Key('problem_text'));
+      final newProblemText = tester.widget<Text>(newProblemTextWidget).data!;
       expect(newProblemText, isNot(equals(initialProblemText)));
     });
 
@@ -167,7 +176,9 @@ void main() {
 
       for (int i = 0; i < 5; i++) {
         // Get the current problem
-        final problemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+        final problemTextWidget = find.byKey(const Key('problem_text'));
+        expect(problemTextWidget, findsOneWidget);
+        final problemText = tester.widget<Text>(problemTextWidget).data!;
         final RegExp problemRegExp = RegExp(r'(\d+)\s\+\s(\d+)\s=\s\?');
         final match = problemRegExp.firstMatch(problemText);
         final num1 = int.parse(match!.group(1)!);
@@ -198,7 +209,9 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
 
       // Get the current problem
-      final problemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final problemTextWidget = find.byKey(const Key('problem_text'));
+      expect(problemTextWidget, findsOneWidget);
+      final problemText = tester.widget<Text>(problemTextWidget).data!;
 
       // Enter incorrect answer
       final nineButton = find.byKey(const Key('keypad_button_9'));
@@ -221,7 +234,8 @@ void main() {
       expect(find.text('Incorrect! Try again.'), findsOneWidget);
 
       // Verify problem remains the same
-      final currentProblemText = tester.widget<Text>(find.byKey(const Key('problem_text'))).data!;
+      final currentProblemTextWidget = find.byKey(const Key('problem_text'));
+      final currentProblemText = tester.widget<Text>(currentProblemTextWidget).data!;
       expect(currentProblemText, equals(problemText));
     });
   });
@@ -249,9 +263,8 @@ void main() {
     });
 
     testWidgets('should solve Sudoku puzzle correctly', (WidgetTester tester) async {
-      // Define a predefined maze that can be solved
-      // For Sudoku, since the solution is random, it's complex to test
-      // Instead, simulate an incorrect solution and expect 'Incorrect solution!' dialog
+      // Since generating a valid Sudoku puzzle is random and complex to solve in tests,
+      // we'll simulate an incorrect solution and expect 'Incorrect solution!' dialog.
 
       await tester.pumpWidget(const MaterialApp(home: SudokuPuzzle()));
 
@@ -273,15 +286,18 @@ void main() {
         for (int col = 0; col < 4; col++) {
           final prefilledFinder = find.byKey(Key('cell_${row}_$col'));
           if (prefilledFinder.evaluate().isNotEmpty) {
-            final prefilledText = tester.widget<Text>(prefilledFinder).data;
-            rowList.add(int.parse(prefilledText!));
-          } else {
-            final inputFinder = find.byKey(Key('input_cell_${row}_$col'));
-            if (inputFinder.evaluate().isNotEmpty) {
-              rowList.add(null);
+            final prefilledTextFinder = find.descendant(
+              of: prefilledFinder,
+              matching: find.byType(Text),
+            );
+            if (prefilledTextFinder.evaluate().isNotEmpty) {
+              final prefilledText = tester.widget<Text>(prefilledTextFinder).data;
+              rowList.add(int.parse(prefilledText!));
             } else {
               rowList.add(null);
             }
+          } else {
+            rowList.add(null);
           }
         }
         initialBoard.add(rowList);
@@ -298,15 +314,18 @@ void main() {
         for (int col = 0; col < 4; col++) {
           final prefilledFinder = find.byKey(Key('cell_${row}_$col'));
           if (prefilledFinder.evaluate().isNotEmpty) {
-            final prefilledText = tester.widget<Text>(prefilledFinder).data;
-            rowList.add(int.parse(prefilledText!));
-          } else {
-            final inputFinder = find.byKey(Key('input_cell_${row}_$col'));
-            if (inputFinder.evaluate().isNotEmpty) {
-              rowList.add(null);
+            final prefilledTextFinder = find.descendant(
+              of: prefilledFinder,
+              matching: find.byType(Text),
+            );
+            if (prefilledTextFinder.evaluate().isNotEmpty) {
+              final prefilledText = tester.widget<Text>(prefilledTextFinder).data;
+              rowList.add(int.parse(prefilledText!));
             } else {
               rowList.add(null);
             }
+          } else {
+            rowList.add(null);
           }
         }
         newBoard.add(rowList);
@@ -510,7 +529,12 @@ void main() {
       List<String> initialNumbers = [];
       for (int i = 0; i < 8; i++) {
         final numberKey = Key('number_$i');
-        final numberText = tester.widget<Text>(find.descendant(of: find.byKey(numberKey), matching: find.byType(Text))).data!;
+        final numberTextFinder = find.descendant(
+          of: find.byKey(numberKey),
+          matching: find.byType(Text),
+        );
+        expect(numberTextFinder, findsOneWidget);
+        final numberText = tester.widget<Text>(numberTextFinder).data!;
         initialNumbers.add(numberText);
       }
 
@@ -522,7 +546,12 @@ void main() {
       List<String> newNumbers = [];
       for (int i = 0; i < 8; i++) {
         final numberKey = Key('number_$i');
-        final numberText = tester.widget<Text>(find.descendant(of: find.byKey(numberKey), matching: find.byType(Text))).data!;
+        final numberTextFinder = find.descendant(
+          of: find.byKey(numberKey),
+          matching: find.byType(Text),
+        );
+        expect(numberTextFinder, findsOneWidget);
+        final numberText = tester.widget<Text>(numberTextFinder).data!;
         newNumbers.add(numberText);
       }
 
@@ -544,7 +573,12 @@ void main() {
       List<int> initialNumbers = [];
       for (int i = 0; i < 8; i++) {
         final numberKey = Key('number_$i');
-        final numberText = tester.widget<Text>(find.descendant(of: find.byKey(numberKey), matching: find.byType(Text))).data!;
+        final numberTextFinder = find.descendant(
+          of: find.byKey(numberKey),
+          matching: find.byType(Text),
+        );
+        expect(numberTextFinder, findsOneWidget);
+        final numberText = tester.widget<Text>(numberTextFinder).data!;
         initialNumbers.add(int.parse(numberText));
       }
 
@@ -572,7 +606,7 @@ void main() {
             initialNumbers[swapIndex] = temp;
 
             // Check if sorted
-            if (initialNumbers.toString() == sortedNumbers.toString()) {
+            if (_isListSorted(initialNumbers, sortedNumbers)) {
               break;
             }
           }
@@ -583,7 +617,12 @@ void main() {
       List<int> finalNumbers = [];
       for (int i = 0; i < 8; i++) {
         final numberKey = Key('number_$i');
-        final numberText = tester.widget<Text>(find.descendant(of: find.byKey(numberKey), matching: find.byType(Text))).data!;
+        final numberTextFinder = find.descendant(
+          of: find.byKey(numberKey),
+          matching: find.byType(Text),
+        );
+        expect(numberTextFinder, findsOneWidget);
+        final numberText = tester.widget<Text>(numberTextFinder).data!;
         finalNumbers.add(int.parse(numberText));
       }
       expect(finalNumbers, equals(sortedNumbers));
@@ -600,7 +639,12 @@ void main() {
       List<String> newNumbers = [];
       for (int i = 0; i < 8; i++) {
         final numberKey = Key('number_$i');
-        final numberText = tester.widget<Text>(find.descendant(of: find.byKey(numberKey), matching: find.byType(Text))).data!;
+        final numberTextFinder = find.descendant(
+          of: find.byKey(numberKey),
+          matching: find.byType(Text),
+        );
+        expect(numberTextFinder, findsOneWidget);
+        final numberText = tester.widget<Text>(numberTextFinder).data!;
         newNumbers.add(numberText);
       }
 
@@ -621,13 +665,18 @@ void main() {
       List<int> initialNumbers = [];
       for (int i = 0; i < 8; i++) {
         final numberKey = Key('number_$i');
-        final numberText = tester.widget<Text>(find.descendant(of: find.byKey(numberKey), matching: find.byType(Text))).data!;
+        final numberTextFinder = find.descendant(
+          of: find.byKey(numberKey),
+          matching: find.byType(Text),
+        );
+        expect(numberTextFinder, findsOneWidget);
+        final numberText = tester.widget<Text>(numberTextFinder).data!;
         initialNumbers.add(int.parse(numberText));
       }
 
       List<int> sortedNumbers = List.from(initialNumbers)..sort();
 
-      if (initialNumbers.toString() != sortedNumbers.toString()) {
+      if (!_isListSorted(initialNumbers, sortedNumbers)) {
         // Do not sort the list
         // The game checks on every swap. Thus, if not sorted, no dialog should appear
 
@@ -639,44 +688,41 @@ void main() {
   });
 
   group('Main Screen Tests', () {
-    testWidgets('should display "No alarms set" when there are no alarms',
-            (WidgetTester tester) async {
-          await tester.pumpWidget(const MaterialApp(home: MyApp()));
+    testWidgets('should display "No alarms set" when there are no alarms', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MyApp()));
 
-          expect(find.text('No alarms set. Tap + to add a new alarm.'), findsOneWidget);
-        });
+      expect(find.text('No alarms set. Tap + to add a new alarm.'), findsOneWidget);
+    });
 
-    testWidgets('should navigate to Set Alarm screen when FAB is tapped',
-            (WidgetTester tester) async {
-          await tester.pumpWidget(const MaterialApp(home: MyApp()));
+    testWidgets('should navigate to Set Alarm screen when FAB is tapped', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MyApp()));
 
-          // Tap the FAB
-          await tester.tap(find.byType(FloatingActionButton));
-          await tester.pumpAndSettle();
+      // Tap the FAB
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
 
-          // Verify navigation to SetAlarm screen
-          expect(find.byType(SetAlarm), findsOneWidget);
-        });
+      // Verify navigation to SetAlarm screen
+      expect(find.byType(SetAlarm), findsOneWidget);
+    });
 
-    testWidgets('should add a new alarm and display it in the list',
-            (WidgetTester tester) async {
-          await tester.pumpWidget(const MaterialApp(home: MyApp()));
+    testWidgets('should add a new alarm and display it in the list', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MyApp()));
 
-          // Navigate to SetAlarm screen
-          await tester.tap(find.byType(FloatingActionButton));
-          await tester.pumpAndSettle();
+      // Navigate to SetAlarm screen
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
 
-          // Simulate entering alarm label
-          await tester.enterText(find.byType(TextField), 'Wake Up');
-          await tester.pump();
+      // Simulate entering alarm label
+      await tester.enterText(find.byType(TextField), 'Wake Up');
+      await tester.pump();
 
-          // Simulate saving the alarm
-          await tester.tap(find.text('Save Alarm'));
-          await tester.pumpAndSettle();
+      // Simulate saving the alarm
+      await tester.tap(find.text('Save Alarm'));
+      await tester.pumpAndSettle();
 
-          // Verify the alarm is added
-          expect(find.text('Wake Up'), findsOneWidget);
-        });
+      // Verify the alarm is added
+      expect(find.text('Wake Up'), findsOneWidget);
+    });
 
     testWidgets('should toggle alarm activation', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: MyApp()));
@@ -743,4 +789,12 @@ void main() {
       expect(find.byType(Settings), findsOneWidget);
     });
   });
+}
+
+// Helper function to check if two lists are sorted and identical
+bool _isListSorted(List<int> list, List<int> sortedList) {
+  for (int i = 0; i < list.length; i++) {
+    if (list[i] != sortedList[i]) return false;
+  }
+  return true;
 }

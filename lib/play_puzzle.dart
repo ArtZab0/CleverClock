@@ -1,6 +1,8 @@
+// play_puzzles.dart
 import 'package:flutter/material.dart';
 import 'dart:math'; // For generating random numbers
 
+// Math Puzzle
 class MathPuzzle extends StatelessWidget {
   const MathPuzzle({super.key});
 
@@ -44,7 +46,8 @@ class _MathGameState extends State<MathGame> {
     _num2 = Random().nextInt(10) + 1; // Random number between 1 and 10
     _correctAnswer = _num1 + _num2;
     _input = ""; // Clear input for the new problem
-    // Do not reset _message here
+    _message = "Solve the problem:"; // Reset message
+    setState(() {});
   }
 
   // This method handles number presses
@@ -158,12 +161,11 @@ class KeypadButton extends StatelessWidget {
   }
 }
 
-// Sudoku game added
-
+// Sudoku Puzzle
 class SudokuPuzzle extends StatelessWidget {
-  final List<List<int>>? predefinedMaze; // Optional parameter for testing
+  final List<List<int>>? predefinedSudoku; // Optional parameter for testing
 
-  const SudokuPuzzle({super.key, this.predefinedMaze});
+  const SudokuPuzzle({super.key, this.predefinedSudoku});
 
   @override
   Widget build(BuildContext context) {
@@ -173,14 +175,16 @@ class SudokuPuzzle extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SudokuBoard(),
+        child: SudokuBoard(predefinedSudoku: predefinedSudoku),
       ),
     );
   }
 }
 
 class SudokuBoard extends StatefulWidget {
-  const SudokuBoard({super.key});
+  final List<List<int>>? predefinedSudoku; // Optional parameter for testing
+
+  const SudokuBoard({super.key, this.predefinedSudoku});
 
   @override
   _SudokuBoardState createState() => _SudokuBoardState();
@@ -232,8 +236,10 @@ class _SudokuBoardState extends State<SudokuBoard> {
       for (int j = 0; j < 4; j++) {
         if (_board[i][j] != _solution[i][j]) {
           correct = false;
+          break;
         }
       }
+      if (!correct) break;
     }
     showDialog(
       context: context,
@@ -257,50 +263,53 @@ class _SudokuBoardState extends State<SudokuBoard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Sudoku grid wrapped in Expanded to prevent overflow
+        // Build the grid using Rows and Columns
         Expanded(
-          child: GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: 16,
-            itemBuilder: (context, index) {
-              int row = index ~/ 4;
-              int col = index % 4;
-              return Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: _board[row][col] != null
-                    ? Container(
-                  key: Key('cell_${row}_$col'),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    color: Colors.grey[300],
+          child: Column(
+            children: [
+              for (int row = 0; row < 4; row++)
+                Expanded(
+                  child: Row(
+                    children: [
+                      for (int col = 0; col < 4; col++)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: _board[row][col] != null
+                                ? Container(
+                              key: Key('cell_${row}_$col'),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.grey[300],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${_board[row][col]}',
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                              ),
+                            )
+                                : TextField(
+                              key: Key('input_cell_${row}_$col'),
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 24),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  // Allow the user to clear the value or enter a new number
+                                  _board[row][col] = int.tryParse(value);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  child: Center(
-                      child: Text(
-                        '${_board[row][col]}',
-                        style: const TextStyle(fontSize: 24),
-                      )),
-                )
-                    : TextField(
-                  key: Key('input_cell_${row}_$col'),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 24),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      // Allow the user to clear the value or enter a new number
-                      _board[row][col] = int.tryParse(value);
-                    });
-                  },
                 ),
-              );
-            },
+            ],
           ),
         ),
         const SizedBox(height: 20),
@@ -320,8 +329,7 @@ class _SudokuBoardState extends State<SudokuBoard> {
   }
 }
 
-// Maze Game added
-
+// Maze Puzzle
 class MazePuzzle extends StatelessWidget {
   final List<List<int>>? predefinedMaze; // Optional parameter for testing
 
@@ -447,39 +455,44 @@ class _MazeBoardState extends State<MazeBoard> {
     }
   }
 
+  Color _getCellColor(int x, int y) {
+    if (x == _playerX && y == _playerY) {
+      return Colors.blue; // Player
+    } else if (_maze[x][y] == 1) {
+      return Colors.black; // Wall
+    } else if (_maze[x][y] == 3) {
+      return Colors.green; // Exit
+    } else if (_maze[x][y] == 2) {
+      return Colors.red; // Start
+    } else {
+      return Colors.white; // Path
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Maze grid wrapped in Expanded to prevent overflow
+        // Maze grid built with Column and Row
         Expanded(
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: mazeSize,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: mazeSize * mazeSize,
-            itemBuilder: (context, index) {
-              int x = index ~/ mazeSize;
-              int y = index % mazeSize;
-              Color color;
-              if (x == _playerX && y == _playerY) {
-                color = Colors.blue; // Player
-              } else if (_maze[x][y] == 1) {
-                color = Colors.black; // Wall
-              } else if (_maze[x][y] == 3) {
-                color = Colors.green; // Exit
-              } else if (_maze[x][y] == 2) {
-                color = Colors.red; // Start
-              } else {
-                color = Colors.white; // Path
-              }
-              return Container(
-                key: Key('maze_cell_${x}_$y'),
-                margin: const EdgeInsets.all(2.0),
-                color: color,
-              );
-            },
+          child: Column(
+            children: [
+              for (int x = 0; x < mazeSize; x++)
+                Expanded(
+                  child: Row(
+                    children: [
+                      for (int y = 0; y < mazeSize; y++)
+                        Expanded(
+                          child: Container(
+                            key: Key('maze_cell_${x}_$y'),
+                            margin: const EdgeInsets.all(2.0),
+                            color: _getCellColor(x, y),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 10),
@@ -525,6 +538,7 @@ class _MazeBoardState extends State<MazeBoard> {
   }
 }
 
+// Sorting Puzzle
 class SortingPuzzle extends StatelessWidget {
   const SortingPuzzle({super.key});
 

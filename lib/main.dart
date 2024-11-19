@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const MathPuzzle()), // Updated here
+                MaterialPageRoute(builder: (context) => const MathPuzzle()),
               );
             },
           ),
@@ -175,17 +175,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color:
-                  alarm.isActive ? Colors.black : Colors.grey.shade600,
+                  color: alarm.isActive ? Colors.black : Colors.grey.shade600,
                 ),
               ),
               subtitle: alarm.label.isNotEmpty
                   ? Text(
                 alarm.label,
                 style: TextStyle(
-                  color: alarm.isActive
-                      ? Colors.black
-                      : Colors.grey.shade600,
+                  color: alarm.isActive ? Colors.black : Colors.grey.shade600,
                 ),
               )
                   : null,
