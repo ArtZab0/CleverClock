@@ -10,8 +10,8 @@ class PlayPuzzle extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Math Puzzle Game'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
         child: MathGame(),
       ),
     );
@@ -19,6 +19,8 @@ class PlayPuzzle extends StatelessWidget {
 }
 
 class MathGame extends StatefulWidget {
+  const MathGame({super.key});
+
   @override
   _MathGameState createState() => _MathGameState();
 }
