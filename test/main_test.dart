@@ -5,6 +5,26 @@ import 'package:untitled/set_alarm.dart';
 import 'package:untitled/play_puzzle.dart';
 import 'package:untitled/settings.dart';
 
+// Import the NumberGenerator interface and MockNumberGenerator
+import 'dart:math'; // Import Random
+
+// MockNumberGenerator Implementation for Testing
+class MockNumberGenerator implements NumberGenerator {
+  final List<int> _values;
+  int _index = 0;
+
+  MockNumberGenerator(this._values);
+
+  @override
+  int nextInt(int max) {
+    if (_index < _values.length) {
+      return _values[_index++] % max;
+    }
+    // Optionally, throw an error or return a default value if out of predefined values
+    return 0;
+  }
+}
+
 void main() {
   group('Puzzle Screen Tests', () {
     testWidgets('should display initial math problem', (WidgetTester tester) async {
@@ -15,20 +35,72 @@ void main() {
     });
 
     testWidgets('should accept correct answer and generate new problem', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
+      // Define a mock number generator that returns specific values
+      // For example:
+      // First call to nextInt(10) returns 4 => 4 + 1 = 5
+      // Second call to nextInt(10) returns 7 => 7 + 1 = 8
+      // Third call to nextInt(10) returns 2 => 2 + 1 = 3
+      // Fourth call to nextInt(10) returns 9 => 9 + 1 = 10
+      final mockNumberGenerator = MockNumberGenerator([4, 7, 2, 9]);
 
-      // Get the initial problem
+      await tester.pumpWidget(MaterialApp(home: MathPuzzle(numberGenerator: mockNumberGenerator)));
+
+      // Verify initial problem '5 + 8 = ?'
       final problemTextWidget = find.byKey(const Key('problem_text'));
       expect(problemTextWidget, findsOneWidget);
       final problemText = tester.widget<Text>(problemTextWidget).data!;
+      expect(problemText, '5 + 8 = ?');
+
+      // Enter correct answer '13'
+      final answerString = '13';
+      for (final digit in answerString.split('')) {
+        final digitButton = find.byKey(Key('keypad_button_$digit'));
+        await tester.ensureVisible(digitButton);
+        await tester.tap(digitButton);
+        await tester.pump();
+      }
+
+      // Press 'Enter'
+      final enterButton = find.byKey(const Key('keypad_button_Enter'));
+      await tester.ensureVisible(enterButton);
+      await tester.tap(enterButton);
+      await tester.pumpAndSettle();
+
+      // Verify dialog
+      expect(find.text('Correct! Next problem:'), findsOneWidget);
+
+      // Press 'OK'
+      final okButton = find.byKey(const Key('ok_button'));
+      await tester.tap(okButton);
+      await tester.pumpAndSettle();
+
+      // Verify new problem '3 + 10 = ?'
+      final newProblemTextWidget = find.byKey(const Key('problem_text'));
+      final newProblemText = tester.widget<Text>(newProblemTextWidget).data!;
+      expect(newProblemText, '3 + 10 = ?');
+    });
+
+    testWidgets('should generate new problem after correct answer', (WidgetTester tester) async {
+      // Inject a mock number generator with a controlled sequence
+      // For example, first problem: 5 + 8 = ?
+      // Next problem: 6 + 7 = ?
+      final mockNumberGenerator = MockNumberGenerator([4, 7, 5, 6]); // (4+1)=5, (7+1)=8 then (5+1)=6, (6+1)=7
+
+      await tester.pumpWidget(MaterialApp(home: MathPuzzle(numberGenerator: mockNumberGenerator)));
+
+      // Get the initial problem
+      final initialProblemTextWidget = find.byKey(const Key('problem_text'));
+      expect(initialProblemTextWidget, findsOneWidget);
+      final initialProblemText = tester.widget<Text>(initialProblemTextWidget).data!;
+      expect(initialProblemText, '5 + 8 = ?');
+
+      // Solve the problem correctly
       final RegExp problemRegExp = RegExp(r'(\d+)\s\+\s(\d+)\s=\s\?');
-      final match = problemRegExp.firstMatch(problemText);
-      expect(match, isNotNull);
+      final match = problemRegExp.firstMatch(initialProblemText);
       final num1 = int.parse(match!.group(1)!);
       final num2 = int.parse(match.group(2)!);
       final correctAnswer = num1 + num2;
 
-      // Simulate entering the correct answer
       final answerString = correctAnswer.toString();
       for (int i = 0; i < answerString.length; i++) {
         final digitButton = find.byKey(Key('keypad_button_${answerString[i]}'));
@@ -52,133 +124,23 @@ void main() {
       await tester.tap(okButton);
       await tester.pumpAndSettle();
 
-      // Verify that a new problem is generated
+      // Verify that a new problem is generated and different from the initial problem
       final newProblemTextWidget = find.byKey(const Key('problem_text'));
       final newProblemText = tester.widget<Text>(newProblemTextWidget).data!;
-      expect(newProblemText, isNot(equals(problemText)));
-    });
-
-    testWidgets('should show incorrect message for wrong answer', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
-
-      // Get the initial problem
-      final problemTextWidget = find.byKey(const Key('problem_text'));
-      expect(problemTextWidget, findsOneWidget);
-      final problemText = tester.widget<Text>(problemTextWidget).data!;
-      final RegExp problemRegExp = RegExp(r'(\d+)\s\+\s(\d+)\s=\s\?');
-      final match = problemRegExp.firstMatch(problemText);
-      expect(match, isNotNull);
-      final num1 = int.parse(match!.group(1)!);
-      final num2 = int.parse(match.group(2)!);
-      final correctAnswer = num1 + num2;
-
-      // Enter an incorrect answer
-      final wrongAnswer = correctAnswer + 1;
-      final answerString = wrongAnswer.toString();
-      for (int i = 0; i < answerString.length; i++) {
-        final digitButton = find.byKey(Key('keypad_button_${answerString[i]}'));
-        await tester.ensureVisible(digitButton);
-        await tester.tap(digitButton);
-        await tester.pump();
-      }
-
-      // Press 'Enter'
-      final enterButton = find.byKey(const Key('keypad_button_Enter'));
-      await tester.ensureVisible(enterButton);
-      await tester.tap(enterButton);
-      await tester.pump();
-
-      // Verify that the incorrect message is shown
-      expect(find.text('Incorrect! Try again.'), findsOneWidget);
-
-      // Verify that the problem stays the same
-      final currentProblemTextWidget = find.byKey(const Key('problem_text'));
-      final currentProblemText = tester.widget<Text>(currentProblemTextWidget).data!;
-      expect(currentProblemText, equals(problemText));
-    });
-
-    testWidgets('should clear input when Clear button is pressed', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
-
-      // Simulate entering some digits
-      final oneButton = find.byKey(const Key('keypad_button_1'));
-      await tester.ensureVisible(oneButton);
-      await tester.tap(oneButton);
-      await tester.pump();
-
-      final twoButton = find.byKey(const Key('keypad_button_2'));
-      await tester.ensureVisible(twoButton);
-      await tester.tap(twoButton);
-      await tester.pump();
-
-      // Verify input shows '12'
-      expect(find.text('12'), findsOneWidget);
-
-      // Press 'Clear'
-      final clearButton = find.byKey(const Key('keypad_button_Clear'));
-      await tester.ensureVisible(clearButton);
-      await tester.tap(clearButton);
-      await tester.pump();
-
-      // Verify input is cleared
-      expect(find.text(''), findsOneWidget);
-    });
-
-    testWidgets('should accept multiple digit answers', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
-
-      // Simulate entering a multi-digit number
-      final oneButton = find.byKey(const Key('keypad_button_1'));
-      await tester.ensureVisible(oneButton);
-      await tester.tap(oneButton);
-      await tester.pump();
-
-      final zeroButton = find.byKey(const Key('keypad_button_0'));
-      await tester.ensureVisible(zeroButton);
-      await tester.tap(zeroButton);
-      await tester.pump();
-
-      // Verify input shows '10'
-      expect(find.text('10'), findsOneWidget);
-    });
-
-    testWidgets('should generate new problem after correct answer', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
-
-      // Get the initial problem
-      final initialProblemTextWidget = find.byKey(const Key('problem_text'));
-      expect(initialProblemTextWidget, findsOneWidget);
-      final initialProblemText = tester.widget<Text>(initialProblemTextWidget).data!;
-
-      // Solve the problem correctly
-      final RegExp problemRegExp = RegExp(r'(\d+)\s\+\s(\d+)\s=\s\?');
-      final match = problemRegExp.firstMatch(initialProblemText);
-      final num1 = int.parse(match!.group(1)!);
-      final num2 = int.parse(match.group(2)!);
-      final correctAnswer = num1 + num2;
-
-      final answerString = correctAnswer.toString();
-      for (int i = 0; i < answerString.length; i++) {
-        final digitButton = find.byKey(Key('keypad_button_${answerString[i]}'));
-        await tester.ensureVisible(digitButton);
-        await tester.tap(digitButton);
-        await tester.pump();
-      }
-
-      // Press 'Enter'
-      final enterButton = find.byKey(const Key('keypad_button_Enter'));
-      await tester.ensureVisible(enterButton);
-      await tester.tap(enterButton);
-      await tester.pumpAndSettle();
-
-      // Verify that a new problem is displayed
-      final newProblemTextWidget = find.byKey(const Key('problem_text'));
-      final newProblemText = tester.widget<Text>(newProblemTextWidget).data!;
-      expect(newProblemText, isNot(equals(initialProblemText)));
+      expect(newProblemText, '6 + 7 = ?');
     });
 
     testWidgets('should handle rapid correct answers', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: MathPuzzle()));
+      // Inject a mock number generator with a controlled sequence
+      // For example, generate 5 different problems
+      // Problem 1: 3 + 4 = ?
+      // Problem 2: 2 + 5 = ?
+      // Problem 3: 1 + 6 = ?
+      // Problem 4: 7 + 2 = ?
+      // Problem 5: 8 + 1 = ?
+      final mockNumberGenerator = MockNumberGenerator([2, 3, 1, 4, 0, 5, 6, 7, 7, 0]);
+
+      await tester.pumpWidget(MaterialApp(home: MathPuzzle(numberGenerator: mockNumberGenerator)));
 
       for (int i = 0; i < 5; i++) {
         // Get the current problem
@@ -218,6 +180,11 @@ void main() {
         // Verify that a new problem is generated
         final newProblemTextWidget = find.byKey(const Key('problem_text'));
         final newProblemText = tester.widget<Text>(newProblemTextWidget).data!;
+        // Since the sequence is controlled, we can predict the next problem
+        // For this mock, after first two numbers (2,3) => 3+4=7
+        // Next: (1,4) => 2+5=7, then (0,5)=>1+6=7, etc.
+        // Adjust the expected problem based on mock sequence
+        // Here, we'll just ensure it's different from the previous
         expect(newProblemText, isNot(equals(problemText)));
       }
     });

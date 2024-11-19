@@ -2,9 +2,43 @@
 import 'package:flutter/material.dart';
 import 'dart:math'; // For generating random numbers
 
+// NumberGenerator Interface
+abstract class NumberGenerator {
+  int nextInt(int max);
+}
+
+// RealNumberGenerator Implementation
+class RealNumberGenerator implements NumberGenerator {
+  final Random _random;
+
+  RealNumberGenerator([int? seed]) : _random = seed != null ? Random(seed) : Random();
+
+  @override
+  int nextInt(int max) => _random.nextInt(max);
+}
+
+// MockNumberGenerator Implementation for Testing
+class MockNumberGenerator implements NumberGenerator {
+  final List<int> _values;
+  int _index = 0;
+
+  MockNumberGenerator(this._values);
+
+  @override
+  int nextInt(int max) {
+    if (_index < _values.length) {
+      return _values[_index++] % max;
+    }
+    // Optionally, throw an error or return a default value if out of predefined values
+    return 0;
+  }
+}
+
 // Math Puzzle
 class MathPuzzle extends StatelessWidget {
-  const MathPuzzle({super.key});
+  final NumberGenerator? numberGenerator; // Optional NumberGenerator instance for testing
+
+  const MathPuzzle({super.key, this.numberGenerator});
 
   @override
   Widget build(BuildContext context) {
@@ -12,16 +46,18 @@ class MathPuzzle extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Math Game'),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: MathGame(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: MathGame(numberGenerator: numberGenerator),
       ),
     );
   }
 }
 
 class MathGame extends StatefulWidget {
-  const MathGame({super.key});
+  final NumberGenerator? numberGenerator; // Optional NumberGenerator instance for testing
+
+  const MathGame({super.key, this.numberGenerator});
 
   @override
   _MathGameState createState() => _MathGameState();
@@ -33,17 +69,30 @@ class _MathGameState extends State<MathGame> {
   int _num2 = 0;
   int _correctAnswer = 0;
   String _message = "Solve the problem:";
+  late NumberGenerator _numberGenerator;
+  int? _previousNum1;
+  int? _previousNum2;
 
   @override
   void initState() {
     super.initState();
+    _numberGenerator = widget.numberGenerator ?? RealNumberGenerator();
     _generateNewProblem(); // Generate the first problem
   }
 
   // This method generates a new addition problem
   void _generateNewProblem() {
-    _num1 = Random().nextInt(10) + 1; // Random number between 1 and 10
-    _num2 = Random().nextInt(10) + 1; // Random number between 1 and 10
+    int newNum1, newNum2;
+    // Ensure the new problem is different from the previous one
+    do {
+      newNum1 = _numberGenerator.nextInt(10) + 1; // Random number between 1 and 10
+      newNum2 = _numberGenerator.nextInt(10) + 1; // Random number between 1 and 10
+    } while (newNum1 == _previousNum1 && newNum2 == _previousNum2);
+
+    _num1 = newNum1;
+    _num2 = newNum2;
+    _previousNum1 = _num1;
+    _previousNum2 = _num2;
     _correctAnswer = _num1 + _num2;
     _input = ""; // Clear input for the new problem
     _message = "Solve the problem:"; // Reset message
