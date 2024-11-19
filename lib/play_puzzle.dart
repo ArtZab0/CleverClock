@@ -61,7 +61,10 @@ class _MathGameState extends State<MathGame> {
     if (_input.isNotEmpty && int.tryParse(_input) == _correctAnswer) {
       setState(() {
         _message = "Correct! Next problem:";
-        _generateNewProblem(); // Generate a new problem
+      });
+      // Delay generating a new problem to allow the message to be visible
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _generateNewProblem();
       });
     } else {
       setState(() {
@@ -151,7 +154,6 @@ class KeypadButton extends StatelessWidget {
     );
   }
 }
-
 
 
 

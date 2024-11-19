@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math'; // For generating random numbers
 import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
