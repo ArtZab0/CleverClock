@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:untitled/sound_page.dart';
+import 'dart:math'; // For generating random numbers
+>>>>>>> Stashed changes
 import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+<<<<<<< Updated upstream
 import 'alarm_page.dart';
 
 
@@ -46,6 +52,9 @@ AwesomeNotifications().initialize(
 
   runApp(const MyApp());
 }
+=======
+import 'sound_page.dart';
+>>>>>>> Stashed changes
 
 // Alarm model
 class Alarm {
@@ -73,6 +82,20 @@ class MyApp extends StatelessWidget {
       ),
       navigatorKey: navigatorKey,
       home: const MyHomePage(title: 'Alarms'),
+<<<<<<< Updated upstream
+=======
+      routes: {
+        '/game_selection': (context) => const GameSelectionPage(),
+        '/math_puzzle': (context) => const MathPuzzle(),
+        '/sudoku_puzzle': (context) => const SudokuPuzzle(),
+        '/maze_puzzle': (context) => const MazePuzzle(),
+        '/sorting_puzzle': (context) => const SortingPuzzle(),
+        '/settings': (context) => const Settings(),
+        '/alarm': (context) => const AlarmPage(),
+        '/sound_page': (context) => SoundPage(),
+
+      },
+>>>>>>> Stashed changes
     );
   }
 }
@@ -148,6 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+<<<<<<< Updated upstream
   void _navigateToAlarmPage() {
     Navigator.push(
       context,
@@ -158,6 +182,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
 >>>>>>> Stashed changes
   @override
+=======
+  void _navigateToSoundPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SoundPage()),
+    );
+  }
+
+    @override
+>>>>>>> Stashed changes
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -182,10 +216,16 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           ),
+<<<<<<< Updated upstream
           // Temporary button to alarm page
           IconButton(
             icon: const Icon(Icons.alarm),
             onPressed: _navigateToAlarmPage,
+=======
+          IconButton(
+            icon: const Icon(Icons.videogame_asset),
+            onPressed: _navigateToSoundPage,
+>>>>>>> Stashed changes
           ),
 
         ],

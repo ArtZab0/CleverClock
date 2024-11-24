@@ -15,6 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   awesome_notifications: ^0.10.0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   flutter_sound: ^9.17.0
 =======
 #  audioplayers: ^6.1.0
@@ -27,6 +28,17 @@ dev_dependencies:
   test_cov_console: ^0.2.2
   mockito: ^5.3.2
   build_runner: ^2.4.6
+=======
+  audioplayers: ^6.1.0
+
+dev_dependencies:
+#  test: ^1.21.0
+#  coverage: ^1.2.0
+#  test_cov_console: ^0.2.2
+#  mockito: ^5.3.2
+#  build_runner: ^2.4.6
+#  shared_preferences: ^2.0.15
+>>>>>>> Stashed changes
   flutter_test:
     sdk: flutter
 
@@ -35,5 +47,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+<<<<<<< Updated upstream
     - assets/ringtone1.mp3
 
+=======
+    - assets/ringtone.mp3
+>>>>>>> Stashed changes
