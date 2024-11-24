@@ -113,6 +113,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   List<Alarm> _alarms = [];
 
   // Function to add a new alarm
@@ -129,10 +130,62 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Function to toggle alarm activation
   void _toggleAlarm(int index, bool? value) {
-    setState(() {
-      _alarms[index].isActive = value ?? false;
-    });
+  if (SettingsState.isParentControlEnabled) { // Static method to access state
+    _showPasswordDialog(index, value);
+  } else {
+    _updateAlarmToggle(index, value);
   }
+}
+
+
+void _updateAlarmToggle(int index, bool? value) {
+  setState(() {
+    _alarms[index].isActive = value ?? false;
+  });
+}
+
+void _showPasswordDialog(int index, bool? value) {
+  TextEditingController passwordController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Enter Parent Password"),
+        content: TextField(
+          controller: passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: "Password",
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text("Submit"),
+            onPressed: () {
+              if (passwordController.text ==
+                  SettingsState.parentPassword) { // Check password
+                Navigator.of(context).pop();
+                _updateAlarmToggle(index, value);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Incorrect Password")),
+                );
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   // Function to delete an alarm
   void _deleteAlarm(int index) {
@@ -143,14 +196,73 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Navigate to SetAlarm page and await the new alarm
   Future<void> _navigateToSetAlarm() async {
-    final newAlarm = await Navigator.push<Alarm>(
-      context,
-      MaterialPageRoute(builder: (context) => const SetAlarm()),
-    );
+    if (SettingsState.isParentControlEnabled) {
+      // If parent control is enabled, prompt for password before opening SetAlarm page
+      bool? isPasswordCorrect = await _showPasswordPrompt();
+      if (isPasswordCorrect == true) {
+        // Navigate to SetAlarm if password is correct
+        final newAlarm = await Navigator.push<Alarm>(
+          context,
+          MaterialPageRoute(builder: (context) => const SetAlarm()),
+        );
 
-    if (newAlarm != null) {
-      _addAlarm(newAlarm);
+        if (newAlarm != null) {
+          _addAlarm(newAlarm);
+        }
+      }
+    } else {
+      // If no parent control, directly navigate to SetAlarm page
+      final newAlarm = await Navigator.push<Alarm>(
+        context,
+        MaterialPageRoute(builder: (context) => const SetAlarm()),
+      );
+
+      if (newAlarm != null) {
+        _addAlarm(newAlarm);
+      }
     }
+  }
+
+
+  // Method to show the password prompt for parent control
+  Future<bool?> _showPasswordPrompt() async {
+    TextEditingController passwordController = TextEditingController();
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Enter Parent Password"),
+          content: TextField(
+            controller: passwordController,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: "Password",
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false on cancel
+              },
+            ),
+            TextButton(
+              child: const Text("Submit"),
+              onPressed: () {
+                if (passwordController.text == SettingsState.parentPassword) {
+                  Navigator.of(context).pop(true); // Return true if password is correct
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Incorrect Password")),
+                  );
+                  Navigator.of(context).pop(false); // Return false on incorrect password
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Navigate to Game Selection Page
@@ -350,4 +462,5 @@ class _GameItem {
     required this.icon,
     required this.routeName,
   });
-}
+}         
+
