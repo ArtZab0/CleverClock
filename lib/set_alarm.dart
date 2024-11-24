@@ -16,20 +16,11 @@ class _SetAlarmState extends State<SetAlarm> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   final TextEditingController _labelController = TextEditingController();
 
-  // Function to pick time
-  // Future<void> _pickTime({Future<TimeOfDay?> Function(BuildContext)? customTimePicker}) async {
-  //   final picker = customTimePicker ?? showTimePicker;
-  //   final TimeOfDay? picked = await picker(
-  //     context,
-  //     initialTime: _selectedTime,
-  //   );
-
   Future<void> _pickTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
     );
-
 
     if (picked != null && picked != _selectedTime) {
       setState(() {
@@ -45,7 +36,7 @@ class _SetAlarmState extends State<SetAlarm> {
       isActive: true,
       label: _labelController.text.trim(),
     );
-    scheduleNotification(_selectedTime.hour, _selectedTime.minute, _labelController.text.trim());
+    scheduleNotification(newAlarm);
     Navigator.pop(context, newAlarm);
   }
 
@@ -55,26 +46,31 @@ class _SetAlarmState extends State<SetAlarm> {
     super.dispose();
   }
 
-  scheduleNotification(int hour, int min, String label) {
+  void scheduleNotification(Alarm alarm) {
+    // Generate a unique ID for each alarm
+    int notificationId =
+    DateTime.now().millisecondsSinceEpoch.remainder(100000);
+
     AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: 10, 
+        id: notificationId,
         channelKey: 'basic_channel',
-        title: label,
+        title: alarm.label.isNotEmpty ? alarm.label : 'Alarm',
         body: 'Clever Clock Alarm',
         category: NotificationCategory.Alarm,
+        payload: {'page': 'alarm'},
       ),
       schedule: NotificationCalendar(
         timeZone: "America/New_York",
-        hour: hour,                        // 12:00 AM (midnight)
-        minute: min,                     // 30 minutes
-        second: 0,                      // 0 seconds
-        preciseAlarm: true, 
+        hour: alarm.time.hour,
+        minute: alarm.time.minute,
+        second: 0,
+        millisecond: 0,
+        preciseAlarm: true,
         repeats: true,
-      )
+      ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -114,10 +110,10 @@ class _SetAlarmState extends State<SetAlarm> {
             // Save Button
             ElevatedButton(
               onPressed: _saveAlarm,
-              child: const Text('Save Alarm'),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50), // Make button full width
               ),
+              child: const Text('Save Alarm'),
             ),
           ],
         ),
