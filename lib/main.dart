@@ -138,6 +138,25 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+<<<<<<< Updated upstream
+=======
+  // Navigate to Game Selection Page
+  void _navigateToGameSelection() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const GameSelectionPage()),
+    );
+  }
+
+  void _navigateToAlarmPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AlarmPage()),
+    );
+  }
+
+
+>>>>>>> Stashed changes
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,6 +182,12 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           ),
+          // Temporary button to alarm page
+          IconButton(
+            icon: const Icon(Icons.alarm),
+            onPressed: _navigateToAlarmPage,
+          ),
+
         ],
       ),
       body: _alarms.isEmpty

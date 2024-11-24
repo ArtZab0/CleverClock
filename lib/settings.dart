@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:untitled/ringtone_management.dart';
+import 'puzzle_queue_management.dart'; // Import the PuzzleQueueManagementPage
+import 'ringtone_page.dart';
+>>>>>>> Stashed changes
 
 class Settings extends StatefulWidget {
   @override
@@ -135,8 +141,39 @@ class _SettingsState extends State<Settings> {
                 });
               },
             ),
+<<<<<<< Updated upstream
             Spacer(),
             // The button for setting alarms will be on the home page as specified
+=======
+            const Divider(),
+            ListTile(
+              title: const Text("Change Ringtone"),
+              leading: const Icon(Icons.music_note),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PuzzleQueueManagementPage()),
+                );
+              },
+            ),
+            const Divider(),
+            ListTile(
+              title: const Text("Puzzle Queue"),
+              subtitle: const Text("Manage your puzzle queue"),
+              leading: const Icon(Icons.queue),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                      const PuzzleQueueManagementPage()),
+                );
+              },
+            ),
+            const Spacer(),
+            // The button for setting alarms is on the home page
+>>>>>>> Stashed changes
           ],
         ),
       ),

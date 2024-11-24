@@ -10,10 +10,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+#  audioplayers: ^6.1.0
 
   cupertino_icons: ^1.0.8
   awesome_notifications: ^0.10.0
+<<<<<<< Updated upstream
   flutter_sound: ^9.17.0
+=======
+#  audioplayers: ^6.1.0
+>>>>>>> Stashed changes
 
 
 dev_dependencies:
@@ -28,7 +33,6 @@ dev_dependencies:
   flutter_lints: ^4.0.0
 
 flutter:
-
   uses-material-design: true
   assets:
     - assets/ringtone1.mp3
