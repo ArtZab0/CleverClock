@@ -113,7 +113,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Alarm> _alarms = [];
+
+  List<Alarm> _alarms = [];
 
   // Function to add a new alarm
   void _addAlarm(Alarm alarm) {
@@ -221,6 +222,7 @@ void _showPasswordDialog(int index, bool? value) {
       }
     }
   }
+
 
   // Method to show the password prompt for parent control
   Future<bool?> _showPasswordPrompt() async {
@@ -461,3 +463,4 @@ class _GameItem {
     required this.routeName,
   });
 }         
+
