@@ -1,5 +1,6 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'ringtones.dart';
 import 'dart:math'; // For generating random numbers
 import 'play_puzzle.dart';
 import 'settings.dart';
@@ -8,6 +9,7 @@ import 'alarm_page.dart';
 import 'puzzle_queue.dart';
 import 'puzzle_queue_management.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:path_provider/path_provider.dart';
 
 // Alarm model
 class Alarm {
@@ -161,6 +163,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _navigateToRingtones() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SoundPage()),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,6 +190,10 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: const Icon(Icons.videogame_asset),
             onPressed: _navigateToGameSelection,
+          ),
+          IconButton(
+            icon: const Icon(Icons.videogame_asset),
+            onPressed: _navigateToRingtones,
           ),
         ],
       ),
