@@ -9,18 +9,19 @@ import 'alarm_page.dart';
 import 'puzzle_queue.dart';
 import 'puzzle_queue_management.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:path_provider/path_provider.dart';
 
 // Alarm model
 class Alarm {
   TimeOfDay time;
   bool isActive;
   String label;
+  int? notificationId; // Added to keep track of the notification ID
 
   Alarm({
     required this.time,
     this.isActive = true,
     this.label = '',
+    this.notificationId,
   });
 }
 
@@ -31,13 +32,17 @@ void main() {
     null,
     [
       NotificationChannel(
-          channelKey: 'basic_channel',
-          channelName: 'Basic notifications',
-          channelDescription: 'Notification channel for basic tests',
-          defaultColor: const Color(0xFF9D50DD),
-          ledColor: Colors.white,
-          importance: NotificationImportance.High,
-          channelShowBadge: true),
+        channelKey: 'basic_channel',
+        channelName: 'Alarm notifications',
+        channelDescription: 'Notification channel for alarms',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        importance: NotificationImportance.Max,
+        channelShowBadge: true,
+        locked: true,
+        enableVibration: true,
+        playSound: false,
+      ),
     ],
     debug: true,
   );
@@ -53,7 +58,8 @@ void main() {
 
 // Define the method to handle notification actions
 Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
-  if (receivedAction.payload != null && receivedAction.payload!['page'] == 'alarm') {
+  if (receivedAction.payload != null &&
+      receivedAction.payload!['page'] == 'alarm') {
     MyApp.navigatorKey.currentState?.push(
       MaterialPageRoute(builder: (context) => const AlarmPage()),
     );
@@ -63,7 +69,8 @@ Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+  GlobalKey<NavigatorState>();
 
   @override
   State<MyApp> createState() => _MyAppState();
