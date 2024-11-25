@@ -112,7 +112,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  List<Alarm> _alarms = [];
+  final List<Alarm> _alarms = [];
 
   // Function to add a new alarm
   void _addAlarm(Alarm alarm) {
