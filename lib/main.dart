@@ -1,4 +1,5 @@
 // main.dart
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math'; // For generating random numbers
 import 'play_puzzle.dart';
@@ -61,6 +62,13 @@ Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: LoginDemo(),
+    );
+  }
+
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
@@ -89,7 +97,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Alarms'),
+      home:  LoginDemo(),
       routes: {
         '/game_selection': (context) => const GameSelectionPage(),
         '/math_puzzle': (context) => const MathPuzzle(),
@@ -99,6 +107,93 @@ class _MyAppState extends State<MyApp> {
         '/settings': (context) => const Settings(),
         '/alarm': (context) => const AlarmPage(),
       },
+    );
+  }
+}
+
+class LoginDemo extends StatefulWidget {
+  @override
+  _LoginDemoState createState() => _LoginDemoState();
+}
+
+class _LoginDemoState extends State<LoginDemo> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Login Page"),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 60.0),
+              child: Center(
+                child: Container(
+                    width: 200,
+                    height: 150,
+                    /*decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(50.0)),*/
+                    child: Icon(CupertinoIcons.clock)),
+              ),
+            ),
+            Padding(
+              //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Email',
+                    hintText: 'Enter valid email id'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 0),
+              //padding: EdgeInsets.symmetric(horizontal: 15),
+              child: TextField(
+
+                obscureText: true,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                    hintText: 'Enter secure password'),
+              ),
+            ),
+            TextButton(
+              onPressed: (){
+                //TODO FORGOT PASSWORD SCREEN GOES HERE
+              },
+              child: Text(
+                'Forgot Password',
+                style: TextStyle(color: Colors.purple, fontSize: 15),
+              ),
+            ),
+            Container(
+              height: 50,
+              width: 250,
+              decoration: BoxDecoration(
+                  color: Colors.purple, borderRadius: BorderRadius.circular(20)),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => MyHomePage(title: '',)));
+                },
+                child: Text(
+                  'Login',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 130,
+            ),
+            Text('New User? Create Account')
+          ],
+        ),
+      ),
     );
   }
 }
