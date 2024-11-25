@@ -1,6 +1,7 @@
 // puzzle_queue.dart
 import 'package:flutter/material.dart';
 
+
 enum PuzzleType {
   MathPuzzle,
   SudokuPuzzle,
@@ -39,4 +40,6 @@ class PuzzleQueue {
   bool get isEmpty => _queue.isEmpty;
 
   int get length => _queue.length;
+
 }
+

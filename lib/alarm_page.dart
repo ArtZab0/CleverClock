@@ -71,6 +71,7 @@ class _AlarmPageState extends State<AlarmPage> {
                 AwesomeNotifications().dismissAllNotifications();
                 Navigator.pop(context);
               },
+
               child: const Text(
                 "Dismiss",
                 style: TextStyle(
@@ -78,6 +79,7 @@ class _AlarmPageState extends State<AlarmPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 40, vertical: 15),
@@ -86,6 +88,7 @@ class _AlarmPageState extends State<AlarmPage> {
                 ),
                 elevation: 8,
               ),
+
             ),
           ],
         )
@@ -161,3 +164,4 @@ class _AlarmPageState extends State<AlarmPage> {
     // But kept here for potential future use
   }
 }
+
