@@ -1,4 +1,6 @@
 // puzzle_queue.dart
+import 'package:flutter/material.dart';
+
 
 
 enum PuzzleType {

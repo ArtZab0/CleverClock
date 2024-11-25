@@ -50,6 +50,14 @@ class _AlarmPageState extends State<AlarmPage> {
                 Navigator.pop(context);
               },
 
+              child: const Text(
+                "Dismiss",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 40, vertical: 15),
@@ -61,15 +69,6 @@ class _AlarmPageState extends State<AlarmPage> {
 
               child: const Text(
                 "Dismiss",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-            ),
-          ],
-        )
             : const CircularProgressIndicator(),
       ),
     );
@@ -141,4 +140,6 @@ class _AlarmPageState extends State<AlarmPage> {
     // But kept here for potential future use
   }
 
+
 }
+

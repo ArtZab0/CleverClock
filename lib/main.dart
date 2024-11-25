@@ -112,7 +112,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  final List<Alarm> _alarms = [];
+  List<Alarm> _alarms = [];
 
   // Function to add a new alarm
   void _addAlarm(Alarm alarm) {
@@ -461,3 +461,4 @@ class _GameItem {
     required this.routeName,
   });
 }         
+

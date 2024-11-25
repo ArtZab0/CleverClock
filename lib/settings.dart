@@ -1,3 +1,4 @@
+// settings.dart
 import 'package:flutter/material.dart';
 import 'puzzle_queue_management.dart'; // Import the PuzzleQueueManagementPage
 
@@ -8,10 +9,12 @@ class Settings extends StatefulWidget {
   _SettingsState createState() => _SettingsState();
 }
 
+
 class SettingsState {
   static bool isParentControlEnabled = false;
   static String parentPassword = '';
 }
+
 
 class _SettingsState extends State<Settings> {
   bool _parentControlEnabled = false;
@@ -20,6 +23,7 @@ class _SettingsState extends State<Settings> {
 
   void _toggleParentControl(bool value) {
     if (value) {
+
       // If enabling parental control, show the Create Password dialog
       if (_parentPassword.isEmpty) {
         _showPasswordDialogToSet(); // Only show if no password is set
@@ -32,6 +36,7 @@ class _SettingsState extends State<Settings> {
     } else {
       // If disabling parental control, show Enter Password dialog
       _showPasswordDialogToDisable();
+
     }
   }
 
@@ -40,12 +45,16 @@ class _SettingsState extends State<Settings> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+
         TextEditingController passwordController = TextEditingController();
+
 
         return AlertDialog(
           title: const Text("Create Parent Password"),
           content: TextField(
+
             controller: passwordController,
+
             obscureText: true,
             decoration: const InputDecoration(
               labelText: "Enter Password",
@@ -56,16 +65,20 @@ class _SettingsState extends State<Settings> {
               child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
+
                 setState(() {
                   // Ensure it doesn't toggle on if cancelled
                   _parentControlEnabled = false;
                 });
+
               },
             ),
             TextButton(
               child: const Text("Set Password"),
               onPressed: () {
+
                 if (passwordController.text.trim().isEmpty) {
+
                   // Prevent setting empty password
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Password cannot be empty")),
@@ -73,12 +86,14 @@ class _SettingsState extends State<Settings> {
                   return;
                 }
                 setState(() {
+
                   _parentPassword = passwordController.text;
                   _parentControlEnabled = true;
                   SettingsState.isParentControlEnabled = true;
                   SettingsState.parentPassword = passwordController.text;
                 });
                 Navigator.of(context).pop(); // Close the dialog
+
               },
             ),
           ],
@@ -92,12 +107,16 @@ class _SettingsState extends State<Settings> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+
         TextEditingController passwordController = TextEditingController();
+
 
         return AlertDialog(
           title: const Text("Enter Password to Disable"),
           content: TextField(
+
             controller: passwordController,
+
             obscureText: true,
             decoration: const InputDecoration(
               labelText: "Enter Password",
@@ -113,6 +132,7 @@ class _SettingsState extends State<Settings> {
             TextButton(
               child: const Text("Submit"),
               onPressed: () {
+
                 if (passwordController.text == _parentPassword) {
                   setState(() {
                     _parentControlEnabled = false;
@@ -120,6 +140,7 @@ class _SettingsState extends State<Settings> {
                     SettingsState.parentPassword = '';
                   });
                   Navigator.of(context).pop(); // Close dialog after disabling
+
                 } else {
                   // Incorrect password feedback
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -179,6 +200,9 @@ class _SettingsState extends State<Settings> {
               },
             ),
             const Spacer(),
+
+            // The button for setting alarms is on the home page
+
           ],
         ),
       ),
