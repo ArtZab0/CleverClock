@@ -634,6 +634,7 @@ class _MazeBoardState extends State<MazeBoard> {
               onPressed: () => _movePlayer(0, 1),
               child: const Icon(Icons.arrow_forward),
             ),
+
           ],
         ),
         Row(
@@ -816,4 +817,5 @@ class _SortingPuzzleState extends State<SortingGame> {
       ],
     );
   }
+
 }

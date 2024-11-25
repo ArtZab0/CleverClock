@@ -1,12 +1,10 @@
 // main.dart
 import 'package:flutter/material.dart';
-import 'dart:math'; // For generating random numbers
+// For generating random numbers
 import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
 import 'alarm_page.dart';
-import 'puzzle_queue.dart';
-import 'puzzle_queue_management.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 // Alarm model
@@ -113,6 +111,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   final List<Alarm> _alarms = [];
 
   // Function to add a new alarm
@@ -221,6 +220,7 @@ void _showPasswordDialog(int index, bool? value) {
       }
     }
   }
+
 
   // Method to show the password prompt for parent control
   Future<bool?> _showPasswordPrompt() async {

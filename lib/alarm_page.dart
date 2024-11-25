@@ -49,6 +49,7 @@ class _AlarmPageState extends State<AlarmPage> {
                 // Dismiss the alarm page
                 Navigator.pop(context);
               },
+
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 40, vertical: 15),
@@ -57,6 +58,7 @@ class _AlarmPageState extends State<AlarmPage> {
                 ),
                 elevation: 8,
               ),
+
               child: const Text(
                 "Dismiss",
                 style: TextStyle(
@@ -64,6 +66,7 @@ class _AlarmPageState extends State<AlarmPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
             ),
           ],
         )
@@ -137,4 +140,5 @@ class _AlarmPageState extends State<AlarmPage> {
     // This callback is now redundant since we're handling navigation via await
     // But kept here for potential future use
   }
+
 }

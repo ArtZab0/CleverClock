@@ -1,5 +1,6 @@
 // puzzle_queue.dart
 
+
 enum PuzzleType {
   MathPuzzle,
   SudokuPuzzle,
@@ -38,4 +39,5 @@ class PuzzleQueue {
   bool get isEmpty => _queue.isEmpty;
 
   int get length => _queue.length;
+
 }

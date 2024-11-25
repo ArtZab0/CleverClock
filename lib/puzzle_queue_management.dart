@@ -117,4 +117,5 @@ class _PuzzleQueueManagementPageState
         return 'Unknown Puzzle';
     }
   }
+
 }
