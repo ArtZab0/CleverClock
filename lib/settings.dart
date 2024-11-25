@@ -1,6 +1,10 @@
 // settings.dart
 import 'package:flutter/material.dart';
 import 'puzzle_queue_management.dart'; // Import the PuzzleQueueManagementPage
+import 'dart:io';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class Settings extends StatefulWidget {
   const Settings({super.key}); // Added const constructor
@@ -9,6 +13,13 @@ class Settings extends StatefulWidget {
   _SettingsState createState() => _SettingsState();
 }
 
+
+class SettingsState {
+  static bool isParentControlEnabled = false;
+  static String parentPassword = '';
+}
+
+
 class _SettingsState extends State<Settings> {
   bool _parentControlEnabled = false;
   String _parentPassword = '';
@@ -16,9 +27,20 @@ class _SettingsState extends State<Settings> {
 
   void _toggleParentControl(bool value) {
     if (value) {
-      _showPasswordDialogToSet(); // Show password dialog when enabling
+
+      // If enabling parental control, show the Create Password dialog
+      if (_parentPassword.isEmpty) {
+        _showPasswordDialogToSet(); // Only show if no password is set
+      } else {
+        setState(() {
+          _parentControlEnabled = true;
+          SettingsState.isParentControlEnabled = true;
+        });
+      }
     } else {
-      _showPasswordDialogToDisable(); // Show password dialog when disabling
+      // If disabling parental control, show Enter Password dialog
+      _showPasswordDialogToDisable();
+
     }
   }
 
@@ -27,12 +49,16 @@ class _SettingsState extends State<Settings> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        TextEditingController _passwordController = TextEditingController();
+
+        TextEditingController passwordController = TextEditingController();
+
 
         return AlertDialog(
           title: const Text("Create Parent Password"),
           content: TextField(
-            controller: _passwordController,
+
+            controller: passwordController,
+
             obscureText: true,
             decoration: const InputDecoration(
               labelText: "Enter Password",
@@ -43,13 +69,20 @@ class _SettingsState extends State<Settings> {
               child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
-                _toggleParentControl(false); // Disable parent control if cancelled
+
+                setState(() {
+                  // Ensure it doesn't toggle on if cancelled
+                  _parentControlEnabled = false;
+                });
+
               },
             ),
             TextButton(
               child: const Text("Set Password"),
               onPressed: () {
-                if (_passwordController.text.trim().isEmpty) {
+
+                if (passwordController.text.trim().isEmpty) {
+
                   // Prevent setting empty password
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Password cannot be empty")),
@@ -57,10 +90,14 @@ class _SettingsState extends State<Settings> {
                   return;
                 }
                 setState(() {
-                  _parentPassword = _passwordController.text;
-                  _parentControlEnabled = true; // Enable parent control
-                  Navigator.of(context).pop(); // Close dialog
+
+                  _parentPassword = passwordController.text;
+                  _parentControlEnabled = true;
+                  SettingsState.isParentControlEnabled = true;
+                  SettingsState.parentPassword = passwordController.text;
                 });
+                Navigator.of(context).pop(); // Close the dialog
+
               },
             ),
           ],
@@ -74,12 +111,16 @@ class _SettingsState extends State<Settings> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        TextEditingController _passwordController = TextEditingController();
+
+        TextEditingController passwordController = TextEditingController();
+
 
         return AlertDialog(
           title: const Text("Enter Password to Disable"),
           content: TextField(
-            controller: _passwordController,
+
+            controller: passwordController,
+
             obscureText: true,
             decoration: const InputDecoration(
               labelText: "Enter Password",
@@ -95,12 +136,15 @@ class _SettingsState extends State<Settings> {
             TextButton(
               child: const Text("Submit"),
               onPressed: () {
-                if (_passwordController.text == _parentPassword) {
+
+                if (passwordController.text == _parentPassword) {
                   setState(() {
-                    _parentControlEnabled = false; // Disable parent control
-                    _parentPassword = ''; // Clear password
+                    _parentControlEnabled = false;
+                    SettingsState.isParentControlEnabled = false;
+                    SettingsState.parentPassword = '';
                   });
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop(); // Close dialog after disabling
+
                 } else {
                   // Incorrect password feedback
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -160,7 +204,21 @@ class _SettingsState extends State<Settings> {
               },
             ),
             const Spacer(),
+            ElevatedButton(
+              onPressed: () async {
+                const url = "https://docs.google.com/forms/d/e/1FAIpQLSdqzMPpQcovFDOdnd_yOB8YNkdQmKB3F0qFwXmHTIIwzLlCfg/viewform?usp=sf_link";
+                if (await canLaunchUrlString(url)) {
+                  await launchUrlString(url);
+                }
+                else {
+                  throw 'Could not launch $url';
+                }
+              },
+              child: Text("Request New Puzzles"),
+            ), // Elevated Button
+
             // The button for setting alarms is on the home page
+
           ],
         ),
       ),
