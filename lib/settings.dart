@@ -1,6 +1,10 @@
 // settings.dart
 import 'package:flutter/material.dart';
 import 'puzzle_queue_management.dart'; // Import the PuzzleQueueManagementPage
+import 'dart:io';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class Settings extends StatefulWidget {
   const Settings({super.key}); // Added const constructor
@@ -200,6 +204,18 @@ class _SettingsState extends State<Settings> {
               },
             ),
             const Spacer(),
+            ElevatedButton(
+              onPressed: () async {
+                const url = "https://docs.google.com/forms/d/e/1FAIpQLSdqzMPpQcovFDOdnd_yOB8YNkdQmKB3F0qFwXmHTIIwzLlCfg/viewform?usp=sf_link";
+                if (await canLaunchUrlString(url)) {
+                  await launchUrlString(url);
+                }
+                else {
+                  throw 'Could not launch $url';
+                }
+              },
+              child: Text("Request New Puzzles"),
+            ), // Elevated Button
 
             // The button for setting alarms is on the home page
 
