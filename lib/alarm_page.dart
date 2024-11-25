@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'play_puzzle.dart';
 import 'puzzle_queue.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class AlarmPage extends StatefulWidget {
   const AlarmPage({super.key});
@@ -13,6 +15,7 @@ class AlarmPage extends StatefulWidget {
 class _AlarmPageState extends State<AlarmPage> {
   final PuzzleQueue _puzzleQueue = PuzzleQueue();
   bool _isProcessing = false; // To prevent multiple concurrent puzzle starts
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -20,6 +23,23 @@ class _AlarmPageState extends State<AlarmPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startNextPuzzle();
     });
+    // _playAlarmSound();
+  }
+
+  @override
+  void dispose() {
+    _stopAlarmSound();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void _playAlarmSound() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('ringtone.mp3'));
+  }
+
+  void _stopAlarmSound() {
+    _audioPlayer.stop();
   }
 
   @override
@@ -47,6 +67,8 @@ class _AlarmPageState extends State<AlarmPage> {
             ElevatedButton(
               onPressed: () {
                 // Dismiss the alarm page
+                _stopAlarmSound();
+                AwesomeNotifications().dismissAllNotifications();
                 Navigator.pop(context);
               },
 
@@ -78,7 +100,9 @@ class _AlarmPageState extends State<AlarmPage> {
   void _startNextPuzzle() async {
     if (_isProcessing) return; // Prevent re-entry
     if (_puzzleQueue.isEmpty) {
-      // No puzzles left, dismiss the alarm page
+      // No puzzles left, stop the alarm sound and dismiss the alarm page
+      _stopAlarmSound();
+      AwesomeNotifications().dismissAllNotifications();
       Navigator.pop(context);
       return;
     }
@@ -89,7 +113,7 @@ class _AlarmPageState extends State<AlarmPage> {
 
     final nextPuzzle = _puzzleQueue.popPuzzle();
 
-    late Widget puzzleWidget; // Changed from Widget? to late Widget
+    late Widget puzzleWidget;
 
     switch (nextPuzzle) {
       case PuzzleType.MathPuzzle:
@@ -113,14 +137,13 @@ class _AlarmPageState extends State<AlarmPage> {
         );
         break;
       default:
-      // Handle unknown puzzle types if any
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Unknown Puzzle Type')),
         );
         setState(() {
           _isProcessing = false;
         });
-        return; // Exit the method early
+        return;
     }
 
     // Navigate to the puzzle and wait for it to complete
@@ -140,6 +163,5 @@ class _AlarmPageState extends State<AlarmPage> {
     // This callback is now redundant since we're handling navigation via await
     // But kept here for potential future use
   }
-
 }
 

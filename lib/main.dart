@@ -1,6 +1,7 @@
 // main.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'ringtones.dart';
 import 'dart:math'; // For generating random numbers
 import 'play_puzzle.dart';
 import 'settings.dart';
@@ -15,11 +16,13 @@ class Alarm {
   TimeOfDay time;
   bool isActive;
   String label;
+  int? notificationId; // Added to keep track of the notification ID
 
   Alarm({
     required this.time,
     this.isActive = true,
     this.label = '',
+    this.notificationId,
   });
 }
 
@@ -30,13 +33,17 @@ void main() {
     null,
     [
       NotificationChannel(
-          channelKey: 'basic_channel',
-          channelName: 'Basic notifications',
-          channelDescription: 'Notification channel for basic tests',
-          defaultColor: const Color(0xFF9D50DD),
-          ledColor: Colors.white,
-          importance: NotificationImportance.High,
-          channelShowBadge: true),
+        channelKey: 'basic_channel',
+        channelName: 'Alarm notifications',
+        channelDescription: 'Notification channel for alarms',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        importance: NotificationImportance.Max,
+        channelShowBadge: true,
+        locked: true,
+        enableVibration: true,
+        playSound: false,
+      ),
     ],
     debug: true,
   );
@@ -52,7 +59,8 @@ void main() {
 
 // Define the method to handle notification actions
 Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
-  if (receivedAction.payload != null && receivedAction.payload!['page'] == 'alarm') {
+  if (receivedAction.payload != null &&
+      receivedAction.payload!['page'] == 'alarm') {
     MyApp.navigatorKey.currentState?.push(
       MaterialPageRoute(builder: (context) => const AlarmPage()),
     );
@@ -368,6 +376,14 @@ void _showPasswordDialog(int index, bool? value) {
     );
   }
 
+  void _navigateToRingtones() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SoundPage()),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -387,6 +403,10 @@ void _showPasswordDialog(int index, bool? value) {
           IconButton(
             icon: const Icon(Icons.videogame_asset),
             onPressed: _navigateToGameSelection,
+          ),
+          IconButton(
+            icon: const Icon(Icons.videogame_asset),
+            onPressed: _navigateToRingtones,
           ),
         ],
       ),

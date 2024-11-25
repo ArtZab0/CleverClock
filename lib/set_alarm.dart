@@ -51,6 +51,8 @@ class _SetAlarmState extends State<SetAlarm> {
     int notificationId =
     DateTime.now().millisecondsSinceEpoch.remainder(100000);
 
+    alarm.notificationId = notificationId; // Store notification ID in alarm
+
     AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: notificationId,
@@ -59,6 +61,9 @@ class _SetAlarmState extends State<SetAlarm> {
         body: 'Clever Clock Alarm',
         category: NotificationCategory.Alarm,
         payload: {'page': 'alarm'},
+        autoDismissible: false,
+        locked: true,
+        fullScreenIntent: true,
       ),
       schedule: NotificationCalendar(
         timeZone: "America/New_York",
