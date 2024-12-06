@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-
 import 'main.dart'; // To access the Alarm model
 
 class SetAlarm extends StatefulWidget {

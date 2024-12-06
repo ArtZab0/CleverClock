@@ -66,7 +66,6 @@ class _AlarmPageState extends State<AlarmPage> {
                 ),
                 elevation: 8,
               ),
-
             ),
           ],
         )
@@ -89,7 +88,7 @@ class _AlarmPageState extends State<AlarmPage> {
 
     final nextPuzzle = _puzzleQueue.popPuzzle();
 
-    late Widget puzzleWidget; // Changed from Widget? to late Widget
+    late Widget puzzleWidget;
 
     switch (nextPuzzle) {
       case PuzzleType.MathPuzzle:

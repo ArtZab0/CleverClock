@@ -1,24 +1,21 @@
 // settings.dart
 import 'package:flutter/material.dart';
-import 'puzzle_queue_management.dart'; // Import the PuzzleQueueManagementPage
+import 'puzzle_queue_management.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class Settings extends StatefulWidget {
-  const Settings({super.key}); // Added const constructor
+  const Settings({super.key});
 
   @override
   _SettingsState createState() => _SettingsState();
 }
 
-
 class SettingsState {
   static bool isParentControlEnabled = false;
   static String parentPassword = '';
 }
-
 
 class _SettingsState extends State<Settings> {
   bool _parentControlEnabled = false;
@@ -40,7 +37,6 @@ class _SettingsState extends State<Settings> {
     } else {
       // If disabling parental control, show Enter Password dialog
       _showPasswordDialogToDisable();
-
     }
   }
 
@@ -51,7 +47,6 @@ class _SettingsState extends State<Settings> {
       builder: (BuildContext context) {
 
         TextEditingController passwordController = TextEditingController();
-
 
         return AlertDialog(
           title: const Text("Create Parent Password"),
@@ -113,7 +108,6 @@ class _SettingsState extends State<Settings> {
       builder: (BuildContext context) {
 
         TextEditingController passwordController = TextEditingController();
-
 
         return AlertDialog(
           title: const Text("Enter Password to Disable"),
@@ -216,9 +210,6 @@ class _SettingsState extends State<Settings> {
               },
               child: Text("Request New Puzzles"),
             ), // Elevated Button
-
-            // The button for setting alarms is on the home page
-
           ],
         ),
       ),

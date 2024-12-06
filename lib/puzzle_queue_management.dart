@@ -119,4 +119,3 @@ class _PuzzleQueueManagementPageState
   }
 
 }
-

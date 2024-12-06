@@ -1,7 +1,6 @@
 // main.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:math'; // For generating random numbers
 import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
@@ -44,7 +43,6 @@ void main() {
   // Set notification listeners
   AwesomeNotifications().setListeners(
     onActionReceivedMethod: onActionReceivedMethod,
-    // You can also set other listeners like onNotificationCreatedMethod, onNotificationDisplayedMethod, etc.
   );
 
   runApp(const MyApp());
@@ -133,14 +131,10 @@ class _LoginDemoState extends State<LoginDemo> {
                 child: Container(
                     width: 200,
                     height: 150,
-                    /*decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(50.0)),*/
                     child: Icon(CupertinoIcons.clock)),
               ),
             ),
             Padding(
-              //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 decoration: InputDecoration(
@@ -152,9 +146,7 @@ class _LoginDemoState extends State<LoginDemo> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
-
                 obscureText: true,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -232,7 +224,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
 void _updateAlarmToggle(int index, bool? value) {
   setState(() {
     _alarms[index].isActive = value ?? false;
@@ -281,7 +272,6 @@ void _showPasswordDialog(int index, bool? value) {
   );
 }
 
-
   // Function to delete an alarm
   void _deleteAlarm(int index) {
     setState(() {
@@ -317,7 +307,6 @@ void _showPasswordDialog(int index, bool? value) {
       }
     }
   }
-
 
   // Method to show the password prompt for parent control
   Future<bool?> _showPasswordPrompt() async {
@@ -468,13 +457,10 @@ void _showPasswordDialog(int index, bool? value) {
   }
 }
 
-// GameSelectionPage remains the same as before
-
 // GameSelectionPage
 class GameSelectionPage extends StatelessWidget {
   const GameSelectionPage({super.key});
 
-  // You can customize the list of games here
   final List<_GameItem> _games = const [
     _GameItem(
         title: 'Math Puzzle',
@@ -536,8 +522,6 @@ class GameSelectionPage extends StatelessWidget {
                   }
                 }),
               );
-              // Alternatively, using named routes:
-              // Navigator.pushNamed(context, game.routeName);
             },
           );
         },

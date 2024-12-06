@@ -1,6 +1,6 @@
 // play_puzzle.dart
 import 'package:flutter/material.dart';
-import 'dart:math'; // For generating random numbers
+import 'dart:math';
 
 // NumberGenerator Interface
 abstract class NumberGenerator {
@@ -29,7 +29,6 @@ class MockNumberGenerator implements NumberGenerator {
     if (_index < _values.length) {
       return _values[_index++] % max;
     }
-    // Optionally, throw an error or return a default value if out of predefined values
     return 0;
   }
 }
@@ -634,7 +633,6 @@ class _MazeBoardState extends State<MazeBoard> {
               onPressed: () => _movePlayer(0, 1),
               child: const Icon(Icons.arrow_forward),
             ),
-
           ],
         ),
         Row(
