@@ -24,7 +24,7 @@ As a final downloadable version of the app is yet to exist, Android Studio must 
 
 **Download Flutter:** <https://docs.flutter.dev/get-started/install?gad_source=1&gclid=Cj0KCQiA3sq6BhD2ARIsAJ8MRwVa0IP4lfNMA_fV7fjY9ulwL7YdpVCfVNcwBOVle5SVvSueyrpjOXcaAlsrEALw_wcB&gclsrc=aw.ds>
 
-For the Flutter installation, make sure to choose Android as first type of app. Once both have been successfully installed and set up, simply open the folder (Clever-Clock main), created by the downloaded .zip of the project through Github, in Android Studio. Once the project has been opened in Android Studio, the app can be ran by _________________________________________
+For the Flutter installation, make sure to choose Android as first type of app. Once both have been successfully installed and set up, simply open the folder (Clever-Clock main), created by the downloaded .zip of the project through Github, in Android Studio. Once the project has been opened in Android Studio, select the Chrome(web) or a virtual device on the top bar of Android Studio and press the green arrow to run the app. 
 
 ## 3. Using the Device
 
