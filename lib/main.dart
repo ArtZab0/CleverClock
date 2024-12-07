@@ -5,9 +5,13 @@ import 'play_puzzle.dart';
 import 'settings.dart';
 import 'set_alarm.dart';
 import 'alarm_page.dart';
+import 'splash_page.dart';
+import 'login_page.dart';
+import 'account_page.dart';
 import 'puzzle_queue.dart';
 import 'puzzle_queue_management.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Alarm model
 class Alarm {
@@ -22,7 +26,13 @@ class Alarm {
   });
 }
 
-void main() {
+void main() async {
+
+  await Supabase.initialize(
+      url: 'https://zjpervwflfaivguoqnbq.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGVydndmbGZhaXZndW9xbmJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM0NDE5MDQsImV4cCI6MjA0OTAxNzkwNH0.7bc0Hwcw3g_pdXRKeQ4fJN8iEJs6IKK7VdDKMrnbwrY'
+    );
+  
   WidgetsFlutterBinding.ensureInitialized();
 
   AwesomeNotifications().initialize(
@@ -47,6 +57,8 @@ void main() {
 
   runApp(const MyApp());
 }
+
+final supabase = Supabase.instance.client;
 
 // Define the method to handle notification actions
 Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
@@ -97,6 +109,8 @@ class _MyAppState extends State<MyApp> {
       ),
       home:  LoginDemo(),
       routes: {
+        '/login': (context) => const LoginPage(),
+        '/account': (context) => const AccountPage(),
         '/game_selection': (context) => const GameSelectionPage(),
         '/math_puzzle': (context) => const MathPuzzle(),
         '/sudoku_puzzle': (context) => const SudokuPuzzle(),
@@ -156,7 +170,7 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             TextButton(
               onPressed: (){
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
+                //forgot password screen
               },
               child: Text(
                 'Forgot Password',
@@ -182,7 +196,15 @@ class _LoginDemoState extends State<LoginDemo> {
             SizedBox(
               height: 130,
             ),
-            Text('New User? Create Account')
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => SplashPage())
+                  );
+                },
+                child: Text(
+                  "New User? Create Account"
+                ))
           ],
         ),
       ),
